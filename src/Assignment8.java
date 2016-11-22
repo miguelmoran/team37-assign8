@@ -20,9 +20,8 @@ public class Assignment8 {
 	 */
 	public static void main(String[] args) {
 
-		Test test = new Test();
-		test.readFiles();
-		test.displayDigest();
+		Simulator simulator = new Simulator("");
+
 		Scanner scanner = new Scanner(System.in);
 		boolean exit = false;
 		while (!exit){
@@ -42,24 +41,12 @@ public class Assignment8 {
 
 
 			switch(command){
-			case "display_requests":
-				test.displayRequests();
+			case "initial":
+				simulator.loadRecords();
 				break;
-			case "display_seats":
-				test.displaySeats();
+			case "resume":
+				//simulator.resume();
 				break;
-			case "display_records":
-				test.displayRecords();
-				break;
-			case "check_request":
-				checkRequest(test);
-				break;	
-			case "add_record":
-				addRecord(test);
-				break;	
-			case "add_seats":
-				addSeats(test);
-				break;	
 			case "quit":
 				exit = true;
 				System.out.println("> stopping the command loop");
@@ -77,26 +64,8 @@ public class Assignment8 {
 
 	}
 	
-	private static void checkRequest(Test test) {
-		int studentId=0;
-		int courseId=0;
 
-		if (attributes == null || attributes.length==0  || !isStringInt(attributes[0])) {
-			System.out.println("> Missing student Id");
-			return;
-		}
-		if (attributes == null || attributes.length<2){
-			System.out.println("> Missing course Id");
-			return;
-		}
-		studentId = Integer.parseInt(attributes[0]);
-		courseId = Integer.parseInt(attributes[1]);
-
-
-		test.checkRequest(studentId,courseId);
-	}
-
-	private static void addRecord(Test test) {
+	private static void addRecord(Simulator simulator) {
 
 		if (attributes == null || attributes.length==0 || !isStringInt(attributes[0])){
 			System.out.println("> Missing or invalid student Id");
@@ -116,22 +85,10 @@ public class Assignment8 {
 		}
 
 
-		test.addRecord(attributes);
+		simulator.addRecord(attributes);
 	}
 
-	private static void addSeats(Test test) {
 
-		if (attributes == null || attributes.length==0 || !isStringInt(attributes[0])){
-			System.out.println("> Missing or invalid course Id");
-			return;	
-		}else if (attributes.length<2 || !isStringInt(attributes[1])){
-			System.out.println("> Missing or invalid number of seats");
-			return;
-		}
-
-
-		test.addSeats(attributes);
-	}
 
 	private static boolean isStringInt(String s){
 		try{
