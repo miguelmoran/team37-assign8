@@ -24,12 +24,25 @@ public class Assignment8 {
 
 		Scanner scanner = new Scanner(System.in);
 		boolean exit = false;
+		
+		String command = args[0];
+		
+		System.out.println(">command: "+command);
+		if (command =="resume") 
+			simulator.resume();
+		
+		System.out.println("loading Records");
+		simulator.loadRecords();
+		
+		System.out.println("loading Instructor Assigments for Semester "+simulator.getCycle());
+		simulator.readAssignments();
+		
 		while (!exit){
 
-			System.out.print("$main:");
+			System.out.print("$roaster selection >");
 			commandLine = scanner.nextLine().split("[,]");
 
-			String command = commandLine[0];
+			command = commandLine[0];
 
 			if (commandLine.length >1){
 				attributes = new String[commandLine.length-1]; 
@@ -41,17 +54,32 @@ public class Assignment8 {
 
 
 			switch(command){
-			case "initial":
-				simulator.loadRecords();
+			case "add":
+				addInstructor(simulator);
 				break;
-			case "resume":
-				//simulator.resume();
+			case "delete":
+				deleteInstructor(simulator);
 				break;
-			case "quit":
+			case "display":
+				simulator.displayRoster();
+				break;
+			case "submit":
+				System.out.println("selections finalized- now processing requests for Semester "+simulator.getCycle());
+				simulator.readRequests();
+				checkRequests(simulator);
+				System.out.println("continue simulation? [yes/no]");
+				break;
+				
+			case "quit": 
+			case "no": 
 				exit = true;
 				System.out.println("> stopping the command loop");
 				scanner.close();
 				break;
+			case "yes":
+				System.out.println("association analysis of previos course selections");
+				simulator.resume();
+				
 			default:
 
 
@@ -64,28 +92,44 @@ public class Assignment8 {
 
 	}
 	
+	private static void checkRequests(Simulator simulator) {
+		int studentId=0;
+		int courseId=0;
 
-	private static void addRecord(Simulator simulator) {
+		if (attributes == null || attributes.length==0  || !isStringInt(attributes[0])) {
+			System.out.println("> Missing student Id");
+			return;
+		}
+		if (attributes == null || attributes.length<2){
+			System.out.println("> Missing course Id");
+			return;
+		}
+		studentId = Integer.parseInt(attributes[0]);
+		courseId = Integer.parseInt(attributes[1]);
+
+
+		simulator.checkRequest(studentId,courseId);
+	}
+	
+	
+	private static void addInstructor(Simulator simulator) {
 
 		if (attributes == null || attributes.length==0 || !isStringInt(attributes[0])){
-			System.out.println("> Missing or invalid student Id");
-			return;
-		}else if (attributes.length<2 || !isStringInt(attributes[1])){
-			System.out.println("> Missing or invalid course Id");
-			return;
-		}else if(attributes.length<3 || !isStringInt(attributes[2])){
 			System.out.println("> Missing or invalid instructor Id");
-			return;
-		}else if (attributes.length<4){
-			System.out.println("> Missing comments");
-			return;
-		}else if (attributes.length<5 || !attributes[4].matches("[ABCDF]")){
-			System.out.println("> Missing or invalid grade");
 			return;
 		}
 
+		simulator.addInstructor(Integer.parseInt(attributes[0]));
+	}
 
-		simulator.addRecord(attributes);
+	private static void deleteInstructor(Simulator simulator) {
+
+		if (attributes == null || attributes.length==0 || !isStringInt(attributes[0])){
+			System.out.println("> Missing or invalid intstructor Id");
+			return;
+		}
+
+		simulator.deleteInstructor(Integer.parseInt(attributes[0]));
 	}
 
 

@@ -13,8 +13,13 @@ public class RequestRecord {
 	protected Course course;
 	protected boolean status;
 	protected RequestResolution requestResolution;
-	
+	protected int cycle;
 
+	
+	RequestRecord(int semester) {
+		this.cycle = semester;
+	}
+	
 	
 	protected RequestResolution calculateStatus(){
 		
@@ -47,9 +52,11 @@ public class RequestRecord {
 		}
 		
 		// check if there are available seats
-		if(this.course.availableSeats >0 )
+		
+		int availableSeats = this.course.getAvailableSeats(cycle);
+		if(availableSeats>0 )
 		{
-				course.availableSeats--;
+				this.course.assignSeats(cycle, availableSeats--);
 				this.status = true;
 				this.requestResolution = RequestResolution.Valid;
 				

@@ -16,7 +16,7 @@ public class Simulator {
 	protected  List<Assignment> assignmentList = new ArrayList<Assignment>();
 	protected  List<RequestRecord> requestList = new ArrayList<RequestRecord>();
 
-	
+	protected  int cycle;
 	protected  int fallCourses;
 	protected  int springCourses;
 	protected  int summerCourses;
@@ -43,6 +43,7 @@ public class Simulator {
 
 	
 	private void initialize() {
+		cycle=1;
 		fallCourses =0;
 		springCourses=0;
 		summerCourses=0;
@@ -50,6 +51,10 @@ public class Simulator {
 		invalid_missingPrerequisites=0;
 		invalid_hasAlreadyTaken=0;
 		invalid_noAvailableSeats=0;
+	}
+	
+	public void resume(){
+		cycle++;
 	}
 	
 	public void loadRecords() {
@@ -61,7 +66,7 @@ public class Simulator {
 		readPrerequisites();
 		
 	}
-	
+		
 	private void readStudents() {
 		String csvFileToRead = folderPath + "students.csv";
 
@@ -171,14 +176,14 @@ public class Simulator {
 				String[] courses = line.split(splitBy);	
 
 				Course course = new Course();
-				Term term = new Term();
-				List<Term> terms = new ArrayList<Term>();
+				//Term term = new Term();
+				//List<Term> terms = new ArrayList<Term>();
 
 				if (courses.length > 0) {
 					course.id = Integer.parseInt(courses[0]);
 					course.title = courses[1];
 
-					for (int i=2; i< courses.length; i++)
+					/*for (int i=2; i< courses.length; i++)
 					{
 						term.name = courses[i];
 						terms.add(term);
@@ -193,6 +198,7 @@ public class Simulator {
 
 					}
 					course.terms = terms;
+					*/
 					course.prerequisites = new ArrayList<Course>();
 					courseList.add(course);
 				}
@@ -290,6 +296,119 @@ public class Simulator {
 		}
 	}
 
+	protected void readAssignments(){
+		String csvFileToRead = folderPath + "assignments_"+cycle+".csv";
+		
+		BufferedReader br=null;
+		String line =  "";
+		String splitBy = ",";
+
+		try{
+			InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
+			br = new BufferedReader(new InputStreamReader(i));
+
+			while ((line = br.readLine())!=null){
+				String[] assignments = line.split(splitBy);	
+
+				Assignment assignment = new Assignment();
+				if (assignments.length > 0) {
+					assignment.instructor = findInstructorById(Integer.parseInt(assignments[0]));
+					assignment.course = findCourseById(Integer.parseInt(assignments[1]));
+					assignment.seats = Integer.parseInt(assignments[2]);
+
+					if (assignment.course != null) {
+						assignment.course.assignSeats(cycle, assignment.seats);
+						
+					}
+
+					assignmentList.add(assignment);
+				}
+			}
+
+		}
+		catch(FileNotFoundException e){
+			System.out.println("the test file: "+ csvFileToRead+ "doesn't exist. ");
+		} catch(IOException e) {
+			e.printStackTrace();
+		} finally{
+			if (br !=null) {
+				try{
+					br.close();
+				}
+				catch(IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
+	
+	protected  void readRequests() {
+		String csvFileToRead = folderPath + "requests_"+cycle+".csv";
+		BufferedReader br=null;
+		String line =  "";
+		String splitBy = ",";
+
+		try{
+			InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
+			br = new BufferedReader(new InputStreamReader(i));
+
+			RequestResolution resolution;
+			while ((line = br.readLine())!=null){
+				String[] requests = line.split(splitBy);	
+
+				RequestRecord request = new RequestRecord(cycle);
+				if (requests.length > 0) {
+
+					if (findStudentById(Integer.parseInt(requests[0])) ==null ||
+							findCourseById(Integer.parseInt(requests[1])) == null)
+						continue;
+
+					request.student = findStudentById(Integer.parseInt(requests[0]));
+					request.course = findCourseById(Integer.parseInt(requests[1]));
+					resolution = request.calculateStatus();
+
+					switch (resolution){
+					case Valid:
+						validRequests++;
+						break;
+					case Invalid_MissingPrerequisites: 
+						invalid_missingPrerequisites++;
+						break;
+					case Invalid_HasAlreadyTaken:
+						invalid_hasAlreadyTaken++;
+						break;
+					case Invalid_NoAvailableSeats:
+						invalid_noAvailableSeats++;
+						break;
+					default:
+						break;
+
+					}
+
+					requestList.add(request);
+				}
+			}
+
+		}
+		catch(FileNotFoundException e){
+			System.out.println("the test file: "+ csvFileToRead+ "doesn't exist. ");
+		} catch(IOException e) {
+			e.printStackTrace();
+		} finally{
+			if (br !=null) {
+				try{
+					br.close();
+				}
+				catch(IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
+
+	
 	protected void addRecord(String[] attributes) {
 		AcademicRecord record = new AcademicRecord();
 		if (attributes.length > 0) {
@@ -308,6 +427,54 @@ public class Simulator {
 
 		}
 	}
+	
+	protected void addInstructor(int Instructor){
+		
+	}
+	
+	protected void deleteInstructor(int Instructor){
+		
+	}
+	
+	public void displayRequests(){
+
+		for (int i=0; i< requestList.size();i++){
+			RequestRecord request = requestList.get(i);
+			if(request.status)
+				System.out.println(request.student.getId()+", "+request.student.name+", "+request.course.getId()+", "+request.course.title);
+		}
+
+	}
+	
+	public void displayRoster(){
+		System.out.println("% --- selected ---");
+		System.out.println("% --- unselected ---");
+	}
+	
+	public void	checkRequest(int studentId,int courseId){
+		RequestRecord request = new RequestRecord(cycle);
+		request.student = findStudentById(studentId);
+		request.course = findCourseById(courseId);
+		request.calculateStatus();
+		requestList.add(request);
+		switch (request.requestResolution){
+		case Valid:
+			System.out.println("> request is valid");
+			break;
+		case Invalid_MissingPrerequisites:
+			System.out.println("> student is missing one or more prerequisites");		
+			break;
+		case Invalid_HasAlreadyTaken:
+			System.out.println("> student has already taken the course with a grade of C or higher");
+			break;
+		case Invalid_NoAvailableSeats:
+			System.out.println("> no remaining seats available for the course at this time");
+			break;
+		}
+		
+		
+	}
+	
 	protected  Course findCourseById(int courseId) {
 		boolean courseFound = false;
 
@@ -358,6 +525,10 @@ public class Simulator {
 
 		return (instructorFound)? instructorList.get(i) : null;
 	}
-
+	
+	protected String getCycle(){
+		return new Integer(cycle).toString();
+	}
+	
 	
 }

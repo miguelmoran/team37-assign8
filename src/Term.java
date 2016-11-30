@@ -7,6 +7,6 @@
  *
  */
 public class Term {
-
-	protected String name;
+	protected int id;
+	protected int availableSeats;
 }
