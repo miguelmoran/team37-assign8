@@ -1,10 +1,17 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import weka.associations.Apriori;
+import weka.core.Instances;
+import weka.core.converters.ArffSaver;
+import weka.core.converters.CSVLoader;
+import weka.core.converters.ConverterUtils.DataSource;
 
 
 public class Simulator {
@@ -408,6 +415,49 @@ public class Simulator {
 		}
 	}
 
+	
+	protected  void analizeHistory() {
+		String csvFileToRead = folderPath + "requests_"+cycle+".csv";
+		String arffFileToWrite = folderPath + "requests_"+cycle+".arff";
+		
+		CSVLoader loader = new CSVLoader();
+		Instances data;
+		try {
+			//TODO: convert to Nominal attributes
+			
+			loader.setSource(new File(csvFileToRead));
+			data = loader.getDataSet();
+
+			ArffSaver saver = new ArffSaver();
+			saver.setInstances(data);
+			saver.setFile(new File(arffFileToWrite));
+			saver.setDestination(new File(arffFileToWrite));
+			saver.writeBatch();
+			
+		    DataSource dsource = new DataSource(arffFileToWrite);
+		    Instances dapriori = dsource.getDataSet();
+
+
+		    Apriori apriori = new Apriori();
+		    apriori.buildAssociations(dapriori);
+
+		    System.out.println(apriori);
+			
+			
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("***Error:"+ e.getMessage());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("***Error:"+ e.getMessage());
+		}
+		
+	}
+
+	
+	
 	
 	protected void addRecord(String[] attributes) {
 		AcademicRecord record = new AcademicRecord();

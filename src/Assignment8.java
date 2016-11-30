@@ -36,6 +36,7 @@ public class Assignment8 {
 		
 		System.out.println("loading Instructor Assigments for Semester "+simulator.getCycle());
 		simulator.readAssignments();
+		simulator.analizeHistory();
 		
 		while (!exit){
 
@@ -104,8 +105,8 @@ public class Assignment8 {
 			System.out.println("> Missing course Id");
 			return;
 		}
-		studentId = Integer.parseInt(attributes[0]);
-		courseId = Integer.parseInt(attributes[1]);
+		studentId = Integer.parseInt(attributes[0].trim());
+		courseId = Integer.parseInt(attributes[1].trim());
 
 
 		simulator.checkRequest(studentId,courseId);
@@ -119,7 +120,7 @@ public class Assignment8 {
 			return;
 		}
 
-		simulator.addInstructor(Integer.parseInt(attributes[0]));
+		simulator.addInstructor(Integer.parseInt(attributes[0].trim()));
 	}
 
 	private static void deleteInstructor(Simulator simulator) {
@@ -129,14 +130,14 @@ public class Assignment8 {
 			return;
 		}
 
-		simulator.deleteInstructor(Integer.parseInt(attributes[0]));
+		simulator.deleteInstructor(Integer.parseInt(attributes[0].trim()));
 	}
 
 
 
 	private static boolean isStringInt(String s){
 		try{
-			Integer.parseInt(s);
+			Integer.parseInt(s.trim());
 			return true;
 		}
 		catch(NumberFormatException ex){

@@ -7,5 +7,8 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="weka/remoteExperimentServer.jar"/>
+	<classpathentry kind="lib" path="weka/weka-src.jar"/>
+	<classpathentry kind="lib" path="weka/weka.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
