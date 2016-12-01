@@ -30,7 +30,7 @@ public class Assignment8 {
 		System.out.println(">command: "+command);
 		if (command =="resume") 
 			simulator.resume();
-	System.out.println("loading Records");
+		System.out.println("loading Records");
 		simulator.loadRecords();
 		
 		System.out.println("loading Instructor Assigments for Semester "+simulator.getCycle());
@@ -39,7 +39,7 @@ public class Assignment8 {
 		
 		while (!exit){
 
-			System.out.print("$roaster selection >");
+			System.out.print("$roster selection >");
 			commandLine = scanner.nextLine().split("[,]");
 
 			command = commandLine[0];
@@ -65,9 +65,13 @@ public class Assignment8 {
 				break;
 			case "submit":
 				System.out.println("selections finalized- now processing requests for Semester "+simulator.getCycle());
-				simulator.readRequests();
-				checkRequests(simulator);
-				System.out.println("continue simulation? [yes/no]");
+				
+				simulator.validateCourseRequests();
+				simulator.displaySemesterStatistics();
+				simulator.addRecords();
+				simulator.displayWaitlist();
+				
+								System.out.println("continue simulation? [yes/no]");
 				break;
 				
 			case "quit": 
@@ -86,6 +90,7 @@ public class Assignment8 {
 				break;
 			}
 
+			
 		}
 
 
@@ -96,7 +101,7 @@ public class Assignment8 {
 		int studentId=0;
 		int courseId=0;
 
-		if (attributes == null || attributes.length==0  || !isStringInt(attributes[0])) {
+		if (attributes == null || attributes.length==0  || !Utils.isStringInt(attributes[0])) {
 			System.out.println("> Missing student Id");
 			return;
 		}
@@ -114,7 +119,7 @@ public class Assignment8 {
 	
 	private static void addInstructor(Simulator simulator) {
 
-		if (attributes == null || attributes.length==0 || !isStringInt(attributes[0])){
+		if (attributes == null || attributes.length==0 || !Utils.isStringInt(attributes[0])){
 			System.out.println("> Missing or invalid instructor Id");
 			return;
 		}
@@ -124,7 +129,7 @@ public class Assignment8 {
 
 	private static void deleteInstructor(Simulator simulator) {
 
-		if (attributes == null || attributes.length==0 || !isStringInt(attributes[0])){
+		if (attributes == null || attributes.length==0 || !Utils.isStringInt(attributes[0])){
 			System.out.println("> Missing or invalid intstructor Id");
 			return;
 		}
@@ -134,14 +139,5 @@ public class Assignment8 {
 
 
 
-	private static boolean isStringInt(String s){
-		try{
-			Integer.parseInt(s.trim());
-			return true;
-		}
-		catch(NumberFormatException ex){
-			return false;
-		}
-
-	}
+	
 }

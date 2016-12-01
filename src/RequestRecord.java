@@ -20,6 +20,14 @@ public class RequestRecord {
 		this.cycle = semester;
 	}
 	
+	public void addStudent(Student student){
+		this.student = student;
+	}
+	
+	public void addCourse(Course course){
+		this.course = course;
+	}
+	
 	
 	protected RequestResolution calculateStatus(){
 		
