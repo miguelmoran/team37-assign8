@@ -30,7 +30,7 @@ public class Assignment8 {
 		System.out.println(">command: "+command);
 		if (command =="resume") 
 			simulator.resume();
-	System.out.println("loading Records");
+		System.out.println("loading Records");
 		simulator.loadRecords();
 		
 		System.out.println("loading Instructor Assigments for Semester "+simulator.getCycle());
@@ -65,8 +65,12 @@ public class Assignment8 {
 				break;
 			case "submit":
 				System.out.println("selections finalized- now processing requests for Semester "+simulator.getCycle());
-				simulator.readRequests();
-				checkRequests(simulator);
+				
+				simulator.validateCourseRequests();
+				simulator.displaySemesterStatistics();
+				simulator.addRecords();
+				simulator.displayWaitlist();
+				
 				System.out.println("continue simulation? [yes/no]");
 				break;
 				
@@ -86,10 +90,7 @@ public class Assignment8 {
 				break;
 			}
 
-			simulator.validateCourseRequests();
-			simulator.displaySemesterStatistics();
-			simulator.addRecords();
-			simulator.displayWaitlist();
+			
 		}
 
 
