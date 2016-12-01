@@ -12,6 +12,8 @@ import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.NumericToNominal;
 
 
 public class Simulator {
@@ -93,7 +95,7 @@ public class Simulator {
 				List<PhoneNumber> phones = new ArrayList<PhoneNumber>();
 
 				if (students.length > 0) {
-					student.uuid = Integer.parseInt(students[0]);
+					student.uuid = Integer.parseInt(students[0].trim());
 					student.name = students[1];
 					student.address = students[2];
 					contactNumber.number = students[3];
@@ -423,14 +425,26 @@ public class Simulator {
 		CSVLoader loader = new CSVLoader();
 		Instances data;
 		try {
-			//TODO: convert to Nominal attributes
 			
 			loader.setSource(new File(csvFileToRead));
 			data = loader.getDataSet();
 
+			NumericToNominal convert = new NumericToNominal();
+			String[] options = new String[2];
+			options[0]="-R";
+			options[1]="1-2"; //range of variables 
+			
+			convert.setOptions(options);
+			convert.setInputFormat(data);
+			
+			Instances convertData = Filter.useFilter(data,convert);
+			
 			ArffSaver saver = new ArffSaver();
-			saver.setInstances(data);
+			saver.setInstances(convertData);
 			saver.setFile(new File(arffFileToWrite));
+			
+			
+			
 			saver.setDestination(new File(arffFileToWrite));
 			saver.writeBatch();
 			
