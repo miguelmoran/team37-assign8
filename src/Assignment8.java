@@ -87,6 +87,7 @@ public class Assignment8 {
 			}
 
 			simulator.validateCourseRequests();
+			simulator.displaySemesterStatistics();
 			simulator.addRecords();
 			simulator.displayWaitlist();
 		}

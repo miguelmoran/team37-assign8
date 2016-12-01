@@ -39,6 +39,11 @@ public class Simulator {
 	protected  int invalid_hasAlreadyTaken;
 	protected  int invalid_noAvailableSeats;
 	
+	private int totalValid;
+	private int totalFailed;
+	private int totalWaitlisted;
+	private int totalExamined;
+	
 	private Random random;
 	
 	public Simulator(){
@@ -67,6 +72,11 @@ public class Simulator {
 		invalid_missingPrerequisites=0;
 		invalid_hasAlreadyTaken=0;
 		invalid_noAvailableSeats=0;
+		
+		totalValid = 0;
+		totalFailed = 0;
+		totalWaitlisted = 0;
+		totalExamined = 0;
 		
 		random = new Random();
 	}
@@ -427,6 +437,10 @@ public class Simulator {
 	}
 
 	public void validateCourseRequests(){
+		validRequests=0;
+		invalid_missingPrerequisites=0;
+		invalid_hasAlreadyTaken=0;
+		invalid_noAvailableSeats=0;
 		
 		List<RequestRecord> toRemove = new ArrayList<RequestRecord>();
 		
@@ -450,6 +464,7 @@ public class Simulator {
 			waitlist.remove(request);
 			requestList.add(request);
 		}
+		
 	}
 	
 	private void checkRequest(RequestRecord request){
@@ -476,6 +491,27 @@ public class Simulator {
 			if(!waitlist.contains(request))
 				waitlist.add(request);
 		}
+	}
+	
+	public void displaySemesterStatistics(){
+		System.out.println("Semester Statistics");
+		StringBuilder sb = new StringBuilder();
+	
+		sb.append("Examined: " +  waitlist.size() + requestList.size() + " Granted: " + validRequests);
+		sb.append(" Failed: " + (invalid_missingPrerequisites + invalid_hasAlreadyTaken) + "Wait Listed: " + invalid_noAvailableSeats); 
+		
+		System.out.println(sb.toString());
+		
+		totalExamined += waitlist.size() + requestList.size();
+		totalValid += validRequests;
+		totalFailed += invalid_missingPrerequisites;
+		totalFailed += invalid_hasAlreadyTaken;
+		totalWaitlisted += invalid_noAvailableSeats;
+		
+		System.out.println("Total Statistics");
+		sb.append("Examined: " +  totalExamined + " Granted: " + totalValid);
+		sb.append(" Failed: " + totalFailed + " Wait Listed: " + totalWaitlisted); 
+		
 	}
 	
 	public void addRecords(){
@@ -528,6 +564,7 @@ public class Simulator {
 			
 			sb.append(request.student.uuid + ", " + request.student.name + ", ");
 			sb.append(request.course.id + ", " + request.course.title);
+			System.out.println(sb.toString());
 		}
 	}
 	
