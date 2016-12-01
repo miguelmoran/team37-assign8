@@ -61,8 +61,15 @@ public class Assignment8 {
 				deleteInstructor(simulator);
 				break;
 			case "display":
-				simulator.displayRoster();
+			case "show_roster":
+				simulator.showRoster();
 				break;
+			case "show_catalogue":
+				System.out.println("Course Catalogue: ");
+				// call some helper method to display the courses with seats > 0
+			
+				break;
+		
 			case "submit":
 				System.out.println("selections finalized- now processing requests for Semester "+simulator.getCycle());
 				
@@ -83,11 +90,20 @@ public class Assignment8 {
 			case "yes":
 				System.out.println("association analysis of previos course selections");
 				simulator.resume();
-				
+			case "help":			
 			default:
-
-
+				
+				System.out.println("help             - show this help screen.");
+				System.out.println("add,row          - add uid from the roster to the assignment.");
+				System.out.println("delete,row       - delete uid from the assignment and put it back on the roster.");
+				System.out.println("show_catalogue   - show the current course catalogue");
+				System.out.println("show_roster      - show the selected and unselected rosters");
+				System.out.println("show_suggestions - show suggestions from WEKA");
+				System.out.println("submit           - submit the selection and complete the instructor assignments.");
+				System.out.println("quit             - quit the simulation.");
+				
 				break;
+				
 			}
 
 			

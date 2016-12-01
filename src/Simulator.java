@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -26,6 +27,14 @@ public class Simulator {
 	protected  List<RequestRecord> requestList = new ArrayList<RequestRecord>();
 	protected  List<RequestRecord> waitlist = new ArrayList<RequestRecord>();
 
+	final int MAXSize = 10000;
+	int numInstructorsSelected = 0;
+	int[] selectedInstructors = new int[MAXSize];
+	boolean[] unSelectedAssignments = new boolean[MAXSize];
+	boolean[] selectedAssignments = new boolean[MAXSize];
+
+	
+	
 	protected  int cycle;
 	protected  int fallCourses;
 	protected  int springCourses;
@@ -34,6 +43,7 @@ public class Simulator {
 	protected  int invalid_missingPrerequisites;
 	protected  int invalid_hasAlreadyTaken;
 	protected  int invalid_noAvailableSeats;
+	private final int MAXInstructors = 5; //maximum number of instructors to hire per cycle
 	
 	private int totalValid;
 	private int totalFailed;
@@ -618,7 +628,6 @@ public class Simulator {
 		}
 		
 	}
-
 	
 	protected void addRecord(String[] attributes) {
 		AcademicRecord record = new AcademicRecord();
@@ -639,12 +648,95 @@ public class Simulator {
 		}
 	}
 	
-	protected void addInstructor(int Instructor){
-		
+	protected void addInstructor(int selection){
+		if ( numInstructorsSelected < MAXInstructors) {
+			// The add command takes the argument of the index (row) of the assignment, starting at 0.
+			// Each indexed item contains the instructor id, course id, and the seating capacity of the course
+
+			
+			// first check to see if this row is in the un-assigned roster
+			if (selection < assignmentList.size() && selection >=0 ) {
+				if (unSelectedAssignments[selection]){		// this is a valid row or index
+					
+						
+						boolean found = false;
+						for (int i=0; i<=selection && i<assignmentList.size() && !found; i++) {
+							Assignment a =  assignmentList.get(i);
+					
+							if (selectedInstructors[a.getInstructor().getId()] == 0) {	// 0 means this instructor was not selected
+									selectedInstructors[a.getInstructor().getId()] = 1;
+									unSelectedAssignments[selection] = false;
+									selectedAssignments[selection] = true;
+							} else {
+								System.out.println("This instructor, "+a.getInstructor().getId()+", has been assigned.");
+							}
+							
+							for (int j=0; j<courseList.size(); j++) {
+								Course c = courseList.get(j);
+								if (c.getId() == a.course.getId()){
+									c.assignSeats(cycle,a.getCapacity());
+									found = true;
+									break;
+								}
+							}
+						}
+					
+				} else {
+					System.out.println("This row, "+selection+", has already been added");
+				}
+				
+			} else {
+				System.out.println("Invalid selection, please choose the row number from the unselected roster to add");
+			}
+			
+		}
+		else
+			System.out.println("No more budget to hire new instructor. You may delete an assignment to reallocate the budget.");
+
 	}
 	
-	protected void deleteInstructor(int Instructor){
-		
+	protected void deleteInstructor(int selection){
+		// this is the opposite of add
+		// need to determine if the assignment was previously added. If so, remove it, and subtract the seats from the course
+
+		if (numInstructorsSelected > 0){
+			
+			if (selection < assignmentList.size() && selection >=0 ) {
+				if (selectedAssignments[selection]){		// this row was previously added
+					
+					selectedAssignments[selection] = false;
+					unSelectedAssignments[selection] = true;
+					numInstructorsSelected --;
+					
+					// now remove the seats from the course
+					boolean found = false;
+					for (int i=0; i<=selection && i<assignmentList.size() && !found; i++) {
+						Assignment a =  assignmentList.get(i);
+						
+						for (int j=0; j<courseList.size(); j++) {
+							Course c = courseList.get(j);
+							if (c.getId() == a.course.getId()){
+								c.removeSeats(cycle,a.getCapacity());
+								found = true;
+								break;
+							}
+						}
+					}
+
+
+				} else {
+					System.out.println("Invalid selection. This row has not been added, so it cannot be deleted.");
+				}
+				
+			} else {
+				System.out.println("Out of range. Please select the row number from the Selected List.");
+			}
+
+			
+		} else {
+			System.out.println("Cannot delete. The Selection List is empty.");
+		}
+
 	}
 	
 	public void displayRequests(){
@@ -657,10 +749,6 @@ public class Simulator {
 
 	}
 	
-	public void displayRoster(){
-		System.out.println("% --- selected ---");
-		System.out.println("% --- unselected ---");
-	}
 	
 	public void checkRequest(int studentId,int courseId){
 		RequestRecord request = new RequestRecord(cycle);
@@ -750,5 +838,68 @@ public class Simulator {
 		return new Integer(cycle).toString();
 	}
 	
+	//Leland -- step 5: Select Instructor Assignments
+		// required input or access to these
+		// 1) output from WEKA
+		// 2) assignmentList filled (from the current cycle)
+		// 3) budget or maximum number of instructors to hire (assumed to be 5, using MAXInstructors)
+		// 
+		// resulting output
+		// a) courses with seats, based on hired instructors
+		// b) quit command to quit the simulation
+		
+		public void selectInstructors () {
+			
+			// unselected rosters = assignments file
+			// selected roster = begin with an empty list
+
+			// copy the Assignment's index to unSelectedAssignment;
+			
+			for (int i=0; i < assignmentList.size(); i++) {
+				unSelectedAssignments[i] = true;	// true means this element is used
+				selectedAssignments[i] = false;		// false means this element is empty
+			}
+
+			
+	}
+		public void showRoster () {
+
+
+			System.out.println("-----------[Unselected]----------------------------");	
+			System.out.println("Instructors available for selection: ");
+			System.out.println("row: instructor_id, course_id, seats");
+			Iterator ita = assignmentList.iterator();
+			Assignment a = null;
+			int i=0;
+			
+			while (ita.hasNext()){
+				a = (Assignment) ita.next();
+				if (i<MAXSize){
+					if (unSelectedAssignments[i]== true){
+						System.out.println(i+": "+a.getInstructor().getId()+", "+a.getCourse().getId()+", "+a.getCapacity());
+					}
+					i++;					
+				}
+			}
+			
+			System.out.println("-----                                       ------");	
+			System.out.println("--------------[Selected] -------------------------");	
+			System.out.println("Instructors with assignment: ");
+			Iterator itb = assignmentList.iterator();
+			
+			i = 0;
+			while (itb.hasNext()){
+				a = (Assignment) itb.next();
+				if (i<MAXSize){
+					if (selectedAssignments[i]== true){
+						System.out.println(i+": "+a.getInstructor().getId()+", "+a.getCourse().getId()+", "+a.getCapacity());
+					}
+					i++;					
+				}
+			}
+			System.out.println("-------End of List--------------------------------");
+
+			
+		}
 	
 }
