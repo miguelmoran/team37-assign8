@@ -1,8 +1,6 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -98,6 +96,8 @@ public class Simulator {
 		readInstructors();
 		readAcademicRecords();
 		readPrerequisites();
+		
+		
 		
 	}
 		
@@ -375,6 +375,15 @@ public class Simulator {
 
 			}
 		}
+		
+		//initialize 
+		for (int i=0; i < assignmentList.size(); i++) {
+			unSelectedAssignments[i] = true;	// true means this element is used
+			selectedAssignments[i] = false;		// false means this element is empty
+		}
+
+
+		
 	}
 	
 	protected  void readRequests() {
@@ -602,7 +611,7 @@ public class Simulator {
 				if (j< courseList.size()-1)
 					line +=",";
 			}
-			lines.add(line+"\r\n");
+			lines.add(line);
 		}
             
         Utils.writeFile(arffFileToWrite,lines);
