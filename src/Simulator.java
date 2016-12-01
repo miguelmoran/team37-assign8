@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import weka.associations.Apriori;
 import weka.core.Instances;
@@ -24,6 +25,7 @@ public class Simulator {
 	protected  List<AcademicRecord> academicRecords = new ArrayList<AcademicRecord>();
 	protected  List<Assignment> assignmentList = new ArrayList<Assignment>();
 	protected  List<RequestRecord> requestList = new ArrayList<RequestRecord>();
+	protected  List<RequestRecord> waitlist = new ArrayList<RequestRecord>();
 
 	protected  int cycle;
 	protected  int fallCourses;
@@ -33,6 +35,8 @@ public class Simulator {
 	protected  int invalid_missingPrerequisites;
 	protected  int invalid_hasAlreadyTaken;
 	protected  int invalid_noAvailableSeats;
+	
+	private Random random;
 	
 	public Simulator(){
 
@@ -60,6 +64,8 @@ public class Simulator {
 		invalid_missingPrerequisites=0;
 		invalid_hasAlreadyTaken=0;
 		invalid_noAvailableSeats=0;
+		
+		random = new Random();
 	}
 	
 	public void resume(){
@@ -373,8 +379,8 @@ public class Simulator {
 							findCourseById(Integer.parseInt(requests[1])) == null)
 						continue;
 
-					request.student = findStudentById(Integer.parseInt(requests[0]));
-					request.course = findCourseById(Integer.parseInt(requests[1]));
+					request.addStudent(findStudentById(Integer.parseInt(requests[0])));
+					request.addCourse(findCourseById(Integer.parseInt(requests[1])));
 					resolution = request.calculateStatus();
 
 					switch (resolution){
@@ -417,6 +423,110 @@ public class Simulator {
 		}
 	}
 
+	public void validateCourseRequests(){
+		
+		List<RequestRecord> toRemove = new ArrayList<RequestRecord>();
+		
+		//validate waitlisted courses
+		for(RequestRecord request : waitlist){
+			checkRequest(request);
+			
+			//remove from waitlist if no longer on waitlist
+			if(request.requestResolution != RequestResolution.Invalid_NoAvailableSeats)
+			{
+				toRemove.add(request);
+			}
+		}
+		
+		//validate newly loaded courses
+		for(RequestRecord request : requestList){
+			checkRequest(request);
+		}
+		
+		for(RequestRecord request: toRemove){
+			waitlist.remove(request);
+			requestList.add(request);
+		}
+	}
+	
+	private void checkRequest(RequestRecord request){
+		
+		request.calculateStatus();
+		
+		if(request.requestResolution == RequestResolution.Valid){
+			System.out.println("valid");
+			validRequests++;
+		}
+		else if(request.requestResolution == RequestResolution.Invalid_MissingPrerequisites){
+			System.out.println("student is missing one or more prerequisites");
+			invalid_missingPrerequisites++;
+		}
+		else if(request.requestResolution == RequestResolution.Invalid_HasAlreadyTaken){
+			System.out.println("student has already taken the course with a grade of C or higher");
+			invalid_hasAlreadyTaken++;
+		}
+		else if(request.requestResolution == RequestResolution.Invalid_NoAvailableSeats){
+			System.out.println("no remaining seats at this time: (re-)added to waitlist");
+			invalid_noAvailableSeats++;
+
+			//add the item to the waitlist for future processing if not already there
+			if(!waitlist.contains(request))
+				waitlist.add(request);
+		}
+	}
+	
+	public void addRecords(){
+	
+		for(RequestRecord request : requestList){
+			if(request.requestResolution == RequestResolution.Valid){
+				addToRecords(request);
+			}
+		}
+	}
+	
+	private void addToRecords(RequestRecord validRequest){
+		AcademicRecord record = new AcademicRecord();
+		record.student = validRequest.student;
+		record.course = validRequest.course;
+		record.instructor = findInstructorByCourse(validRequest.course);
+		record.comments = "random comment";
+		record.grade = computeGrade();
+
+		Student student = validRequest.student;
+		
+		if (student.academicRecords == null)
+			student.academicRecords = new ArrayList<AcademicRecord>();
+
+		student.academicRecords.add(record);
+		academicRecords.add(record);
+	}
+	
+	private CourseGrade computeGrade(){
+		int score = random.nextInt(100);
+		
+		if(score < 100 && score > 70)
+			return CourseGrade.A;
+		else if(score <= 70 && score > 30)
+			return CourseGrade.B;
+		else if(score <= 30 && score > 20)
+			return CourseGrade.C;
+		else if(score <= 20 && score > 10)
+			return CourseGrade.D;
+		else
+			return CourseGrade.F;
+	}
+	
+	//step 9
+	public void displayWaitlist(){
+		//if on requestList and waitlist, output waitlist info
+		StringBuffer sb = new StringBuffer();
+		for(RequestRecord request : waitlist){
+			sb.delete(0, sb.length());
+			
+			sb.append(request.student.uuid + ", " + request.student.name + ", ");
+			sb.append(request.course.id + ", " + request.course.title);
+		}
+	}
 	
 	protected  void analizeHistory() {
 		String csvFileToRead = folderPath + "requests_"+cycle+".csv";
@@ -515,7 +625,7 @@ public class Simulator {
 		System.out.println("% --- unselected ---");
 	}
 	
-	public void	checkRequest(int studentId,int courseId){
+	public void checkRequest(int studentId,int courseId){
 		RequestRecord request = new RequestRecord(cycle);
 		request.student = findStudentById(studentId);
 		request.course = findCourseById(courseId);
@@ -537,6 +647,15 @@ public class Simulator {
 		}
 		
 		
+	}
+	
+	protected Instructor findInstructorByCourse(Course course){
+		for(Assignment assignment: assignmentList){
+			if(assignment.course.id == course.id){
+				return assignment.instructor;
+			}
+		}
+		return null;
 	}
 	
 	protected  Course findCourseById(int courseId) {

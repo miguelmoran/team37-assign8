@@ -40,7 +40,7 @@ public class Assignment8 {
 		
 		while (!exit){
 
-			System.out.print("$roaster selection >");
+			System.out.print("$roster selection >");
 			commandLine = scanner.nextLine().split("[,]");
 
 			command = commandLine[0];
@@ -87,6 +87,9 @@ public class Assignment8 {
 				break;
 			}
 
+			simulator.validateCourseRequests();
+			simulator.addRecords();
+			simulator.displayWaitlist();
 		}
 
 
