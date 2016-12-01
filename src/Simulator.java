@@ -1,9 +1,14 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -12,6 +17,7 @@ import com.sun.org.apache.bcel.internal.classfile.Attribute;
 
 import weka.associations.Apriori;
 import weka.core.Instances;
+import weka.core.converters.ArffLoader;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
@@ -569,48 +575,61 @@ public class Simulator {
 	}
 	
 	protected  void analizeHistory() {
-		String csvFileToRead = folderPath + "records.csv";
-		String arffFileToWrite = folderPath + "records.arff";
 		
-		CSVLoader loader = new CSVLoader();
+		readAcademicRecords();
+		
+		String arffFileToWrite = folderPath + "history.arff";
+		BufferedWriter output = null;
+        try {
+            File file = new File(arffFileToWrite);
+            output = new BufferedWriter(new FileWriter(file));
+            
+            output.write("@relation university\r\n");
+        	for(int i=0; i< courseList.size(); i++) {
+        		output.write("@attribute 'course"+courseList.get(i).getId()+"' { taken, none}\r\n");
+        	}
+            
+			output.write("@data\r\n");
+            
+            for (int i=0; i< studentList.size();i++){
+    			Student student = studentList.get(i);
+    				
+    			for(int j=0; j< courseList.size(); j++) {
+    				Course course = courseList.get(j);
+    				
+    				if (student.hasTakenCourse(course.getId()) == CourseGrade.CourseNotTaken)
+    					output.write("none");
+    				else
+    					output.write("taken");
+    				
+    				if (j< courseList.size()-1)
+    					output.write(",");
+    			}
+    			output.write("\r\n");
+    		}
+            
+            
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        } finally {
+          if ( output != null ) {
+            try {
+				output.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+          }
+        }
+		
+        ArffLoader loader = new ArffLoader();
 		Instances data;
 		try {
 			
-			loader.setSource(new File(csvFileToRead));
+			loader.setSource(new File(arffFileToWrite));
 			data = loader.getDataSet();
-
-			
-			Remove remove = new Remove();
-			String[] options = new String[2];
-			options[0]="-R"; // "range"
-			options[1]="4-5"; //range of column numbers 
-			remove.setOptions(options);
-			remove.setInputFormat(data);
-			Instances newData = Filter.useFilter(data,remove);
-			
-			NumericToNominal convert = new NumericToNominal();
-			options[0]="-R"; // "range"
-			options[1]="1-3"; //range of column numbers 
-			
-			convert.setOptions(options);
-			convert.setInputFormat(newData);
-			Instances convertData = Filter.useFilter(newData,convert);
-			
-			ArffSaver saver = new ArffSaver();
-			saver.setInstances(convertData);
-			saver.setFile(new File(arffFileToWrite));
-			
-			
-			
-			saver.setDestination(new File(arffFileToWrite));
-			saver.writeBatch();
-			
-		    DataSource dsource = new DataSource(arffFileToWrite);
-		    Instances dapriori = dsource.getDataSet();
-
-
-		    Apriori apriori = new Apriori();
-		    apriori.buildAssociations(dapriori);
+			Apriori apriori = new Apriori();
+			apriori.setUpperBoundMinSupport(0.65);
+		    apriori.buildAssociations(data);
 
 		    System.out.println(apriori);
 		    
