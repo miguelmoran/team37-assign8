@@ -30,8 +30,7 @@ public class Assignment8 {
 		System.out.println(">command: "+command);
 		if (command =="resume") 
 			simulator.resume();
-		
-		System.out.println("loading Records");
+	System.out.println("loading Records");
 		simulator.loadRecords();
 		
 		System.out.println("loading Instructor Assigments for Semester "+simulator.getCycle());

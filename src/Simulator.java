@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.org.apache.bcel.internal.classfile.Attribute;
+
 import weka.associations.Apriori;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
@@ -14,6 +16,7 @@ import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NumericToNominal;
+import weka.filters.unsupervised.attribute.Remove;
 
 
 public class Simulator {
@@ -419,8 +422,8 @@ public class Simulator {
 
 	
 	protected  void analizeHistory() {
-		String csvFileToRead = folderPath + "requests_"+cycle+".csv";
-		String arffFileToWrite = folderPath + "requests_"+cycle+".arff";
+		String csvFileToRead = folderPath + "records.csv";
+		String arffFileToWrite = folderPath + "records.arff";
 		
 		CSVLoader loader = new CSVLoader();
 		Instances data;
@@ -429,15 +432,22 @@ public class Simulator {
 			loader.setSource(new File(csvFileToRead));
 			data = loader.getDataSet();
 
-			NumericToNominal convert = new NumericToNominal();
+			
+			Remove remove = new Remove();
 			String[] options = new String[2];
-			options[0]="-R";
-			options[1]="1-2"; //range of variables 
+			options[0]="-R"; // "range"
+			options[1]="4-5"; //range of column numbers 
+			remove.setOptions(options);
+			remove.setInputFormat(data);
+			Instances newData = Filter.useFilter(data,remove);
+			
+			NumericToNominal convert = new NumericToNominal();
+			options[0]="-R"; // "range"
+			options[1]="1-3"; //range of column numbers 
 			
 			convert.setOptions(options);
-			convert.setInputFormat(data);
-			
-			Instances convertData = Filter.useFilter(data,convert);
+			convert.setInputFormat(newData);
+			Instances convertData = Filter.useFilter(newData,convert);
 			
 			ArffSaver saver = new ArffSaver();
 			saver.setInstances(convertData);
@@ -456,6 +466,7 @@ public class Simulator {
 		    apriori.buildAssociations(dapriori);
 
 		    System.out.println(apriori);
+		    
 			
 			
 			
