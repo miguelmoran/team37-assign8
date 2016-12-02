@@ -18,15 +18,6 @@ import java.util.Random;
 import weka.associations.Apriori;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
-<<<<<<< HEAD
-import weka.core.converters.ArffSaver;
-import weka.core.converters.CSVLoader;
-import weka.core.converters.ConverterUtils.DataSource;
-import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.NumericToNominal;
-import weka.filters.unsupervised.attribute.Remove;
-=======
->>>>>>> origin/master
 
 
 public class Simulator {
@@ -64,13 +55,7 @@ public class Simulator {
 	
 	private Random random;
 	
-	private int totalValid;
-	private int totalFailed;
-	private int totalWaitlisted;
-	private int totalExamined;
-	
-	private Random random;
-	
+
 	public Simulator(){
 
 		folderPath = "";
@@ -242,15 +227,11 @@ public class Simulator {
 					{
 						term.name = courses[i];
 						terms.add(term);
-
 						switch (term.name){
 						case   "Fall": fallCourses++; break;
 						case   "Spring": springCourses++; break;
 						case   "Summer": summerCourses++; break;
-
-
 						}
-
 					}
 					course.terms = terms;
 					*/
@@ -607,52 +588,6 @@ public class Simulator {
 	protected  void analizeHistory() {
 		
 		readAcademicRecords();
-<<<<<<< HEAD
-		
-		String arffFileToWrite = folderPath + "history.arff";
-		BufferedWriter output = null;
-        try {
-            File file = new File(arffFileToWrite);
-            output = new BufferedWriter(new FileWriter(file));
-            
-            output.write("@relation university\r\n");
-        	for(int i=0; i< courseList.size(); i++) {
-        		output.write("@attribute 'course"+courseList.get(i).getId()+"' { taken, none}\r\n");
-        	}
-            
-			output.write("@data\r\n");
-            
-            for (int i=0; i< studentList.size();i++){
-    			Student student = studentList.get(i);
-    				
-    			for(int j=0; j< courseList.size(); j++) {
-    				Course course = courseList.get(j);
-    				
-    				if (student.hasTakenCourse(course.getId()) == CourseGrade.CourseNotTaken)
-    					output.write("none");
-    				else
-    					output.write("taken");
-    				
-    				if (j< courseList.size()-1)
-    					output.write(",");
-    			}
-    			output.write("\r\n");
-    		}
-            
-            
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        } finally {
-          if ( output != null ) {
-            try {
-				output.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-          }
-        }
-		
-=======
 	
 		String arffFileToWrite = folderPath + "history.arff";
         List<String> lines = new ArrayList<String>();
@@ -683,7 +618,6 @@ public class Simulator {
             
         Utils.writeFile(arffFileToWrite,lines);
             
->>>>>>> origin/master
         ArffLoader loader = new ArffLoader();
 		Instances data;
 		try {
@@ -691,12 +625,7 @@ public class Simulator {
 			loader.setSource(new File(arffFileToWrite));
 			data = loader.getDataSet();
 			Apriori apriori = new Apriori();
-			apriori.setUpperBoundMinSupport(0.65);
 		    apriori.buildAssociations(data);
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
 		    System.out.println(apriori);
 			
 		} catch (IOException e) {
@@ -707,7 +636,7 @@ public class Simulator {
 			e.printStackTrace();
 			System.out.println("***Error:"+ e.getMessage());
 		}
-		
+		System.out.print("$roster selection >");
 	}
 	
 	protected void addRecord(String[] attributes) {

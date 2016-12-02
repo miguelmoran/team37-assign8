@@ -37,9 +37,10 @@ public class Assignment8 {
 		simulator.readAssignments();
 		simulator.analizeHistory();
 		
+		
 		while (!exit){
 
-			System.out.print("$roster selection >");
+			
 			commandLine = scanner.nextLine().split("[,]");
 
 			command = commandLine[0];
@@ -77,8 +78,7 @@ public class Assignment8 {
 				simulator.displaySemesterStatistics();
 				simulator.addRecords();
 				simulator.displayWaitlist();
-				
-								System.out.println("continue simulation? [yes/no]");
+				System.out.println("continue simulation? [yes/no]");
 				break;
 				
 			case "quit": 
@@ -88,8 +88,11 @@ public class Assignment8 {
 				scanner.close();
 				break;
 			case "yes":
-				System.out.println("association analysis of previos course selections");
+				System.out.println("association analysis of previous course selections");
 				simulator.resume();
+				simulator.analizeHistory();
+				
+				break;
 			case "help":			
 			default:
 				
