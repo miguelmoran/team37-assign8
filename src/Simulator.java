@@ -690,6 +690,7 @@ public class Simulator {
 					for (int i=0;i<selectedInstructors.size();i++){
 						if (selectedInstructors.get(i) == a.getInstructor().getId()){
 							selectedInstructors.remove(i);
+							System.out.println("Instructor "+a.getInstructor().getId()+" released!");
 							break;
 						}
 					}
