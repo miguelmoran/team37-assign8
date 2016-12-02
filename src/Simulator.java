@@ -703,6 +703,7 @@ public class Simulator {
 		else
 			System.out.println("No more budget to hire new instructor. You may delete an assignment to reallocate the budget.");
 
+		System.out.print("$roster selection >");
 	}
 	
 	protected void deleteInstructor(int selection){
@@ -746,7 +747,7 @@ public class Simulator {
 		} else {
 			System.out.println("Cannot delete. The Selection List is empty.");
 		}
-
+		System.out.print("$roster selection >");
 	}
 	
 	public void displayRequests(){
@@ -909,7 +910,7 @@ public class Simulator {
 			}
 			System.out.println("-------End of List--------------------------------");
 
-			
+			System.out.print("$roster selection >");
 		}
 	
 }

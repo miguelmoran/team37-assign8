@@ -68,7 +68,7 @@ public class Assignment8 {
 			case "show_catalogue":
 				System.out.println("Course Catalogue: ");
 				// call some helper method to display the courses with seats > 0
-			
+				System.out.print("$roster selection >");
 				break;
 		
 			case "submit":
