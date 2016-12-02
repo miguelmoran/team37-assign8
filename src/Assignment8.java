@@ -39,10 +39,7 @@ public class Assignment8 {
 		
 		
 		while (!exit){
-
-			
 			commandLine = scanner.nextLine().split("[,]");
-
 			command = commandLine[0];
 
 			if (commandLine.length >1){

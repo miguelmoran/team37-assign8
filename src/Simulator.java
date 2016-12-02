@@ -1,16 +1,10 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -30,18 +24,12 @@ public class Simulator {
 	protected  List<RequestRecord> requestList = new ArrayList<RequestRecord>();
 	protected  List<RequestRecord> waitlist = new ArrayList<RequestRecord>();
 
-	final int MAXSize = 10000;
-	int numInstructorsSelected = 0;
-	int[] selectedInstructors = new int[MAXSize];
-	boolean[] unSelectedAssignments = new boolean[MAXSize];
-	boolean[] selectedAssignments = new boolean[MAXSize];
-
+    protected List<Integer> selectedInstructors = new ArrayList<Integer>();
+	protected List<Boolean> assigmentSelection = new ArrayList<Boolean>();
 	
+    
 	
 	protected  int cycle;
-	protected  int fallCourses;
-	protected  int springCourses;
-	protected  int summerCourses;
 	protected  int validRequests;
 	protected  int invalid_missingPrerequisites;
 	protected  int invalid_hasAlreadyTaken;
@@ -57,27 +45,20 @@ public class Simulator {
 	
 
 	public Simulator(){
-
 		folderPath = "";
-
 		initialize();
 	}
 
 	
 
 	public Simulator(String path){
-
 		folderPath = path;
-
 		initialize();
 	} 
 
 	
 	private void initialize() {
 		cycle=1;
-		fallCourses =0;
-		springCourses=0;
-		summerCourses=0;
 		validRequests=0;
 		invalid_missingPrerequisites=0;
 		invalid_hasAlreadyTaken=0;
@@ -358,6 +339,7 @@ public class Simulator {
 					}
 
 					assignmentList.add(assignment);
+					assigmentSelection.add(false);
 				}
 			}
 
@@ -377,14 +359,6 @@ public class Simulator {
 
 			}
 		}
-		
-		//initialize 
-		for (int i=0; i < assignmentList.size(); i++) {
-			unSelectedAssignments[i] = true;	// true means this element is used
-			selectedAssignments[i] = false;		// false means this element is empty
-		}
-
-
 		
 	}
 	
@@ -659,40 +633,35 @@ public class Simulator {
 	}
 	
 	protected void addInstructor(int selection){
-		if ( numInstructorsSelected < MAXInstructors) {
+		if ( selectedInstructors.size() < MAXInstructors) {
 			// The add command takes the argument of the index (row) of the assignment, starting at 0.
 			// Each indexed item contains the instructor id, course id, and the seating capacity of the course
-
 			
 			// first check to see if this row is in the un-assigned roster
 			if (selection < assignmentList.size() && selection >=0 ) {
-				if (unSelectedAssignments[selection]){		// this is a valid row or index
-					
-						
-						boolean found = false;
-						for (int i=0; i<=selection && i<assignmentList.size() && !found; i++) {
-							Assignment a =  assignmentList.get(i);
-					
-							if (selectedInstructors[a.getInstructor().getId()] == 0) {	// 0 means this instructor was not selected
-									selectedInstructors[a.getInstructor().getId()] = 1;
-									unSelectedAssignments[selection] = false;
-									selectedAssignments[selection] = true;
-							} else {
-								System.out.println("This instructor, "+a.getInstructor().getId()+", has been assigned.");
-							}
+				
+				if (!assigmentSelection.get(selection)){		// this is a valid row or index
+						Assignment a =  assignmentList.get(selection);
+				
+						if (!selectedInstructors.contains(a.getInstructor().getId())) {	
+							assigmentSelection.set(selection,true);
+							selectedInstructors.add(a.getInstructor().getId());
 							
-							for (int j=0; j<courseList.size(); j++) {
-								Course c = courseList.get(j);
-								if (c.getId() == a.course.getId()){
-									c.assignSeats(cycle,a.getCapacity());
-									found = true;
-									break;
-								}
+							System.out.println("The Instructor "+a.getInstructor().getId()+" selected!");
+						} else {
+							System.out.println("The instructor "+a.getInstructor().getId()+" has already been assigned.");
+						}
+						
+						for (int j=0; j<courseList.size(); j++) {
+							Course c = courseList.get(j);
+							if (c.getId() == a.course.getId()){
+								c.assignSeats(cycle,a.getCapacity());
+								break;
 							}
 						}
-					
+						
 				} else {
-					System.out.println("This row, "+selection+", has already been added");
+					System.out.println("The row "+selection+", has already been added");
 				}
 				
 			} else {
@@ -710,31 +679,30 @@ public class Simulator {
 		// this is the opposite of add
 		// need to determine if the assignment was previously added. If so, remove it, and subtract the seats from the course
 
-		if (numInstructorsSelected > 0){
+		if (selectedInstructors.size() > 0){
 			
 			if (selection < assignmentList.size() && selection >=0 ) {
-				if (selectedAssignments[selection]){		// this row was previously added
+				if (assigmentSelection.get(selection)){		// this row was previously added
+					assigmentSelection.set(selection,false);
 					
-					selectedAssignments[selection] = false;
-					unSelectedAssignments[selection] = true;
-					numInstructorsSelected --;
+					Assignment a =  assignmentList.get(selection);
 					
-					// now remove the seats from the course
-					boolean found = false;
-					for (int i=0; i<=selection && i<assignmentList.size() && !found; i++) {
-						Assignment a =  assignmentList.get(i);
-						
-						for (int j=0; j<courseList.size(); j++) {
-							Course c = courseList.get(j);
-							if (c.getId() == a.course.getId()){
-								c.removeSeats(cycle,a.getCapacity());
-								found = true;
-								break;
-							}
+					for (int i=0;i<selectedInstructors.size();i++){
+						if (selectedInstructors.get(i) == a.getInstructor().getId()){
+							selectedInstructors.remove(i);
+							break;
 						}
 					}
-
-
+					
+					// now remove the seats from the course
+					for (int j=0; j<courseList.size(); j++) {
+						Course c = courseList.get(j);
+						if (c.getId() == a.course.getId()){
+							c.removeSeats(cycle,a.getCapacity());
+							break;
+						}
+					}
+				
 				} else {
 					System.out.println("Invalid selection. This row has not been added, so it cannot be deleted.");
 				}
@@ -860,56 +828,34 @@ public class Simulator {
 		// b) quit command to quit the simulation
 		
 		public void selectInstructors () {
-			
-			// unselected rosters = assignments file
-			// selected roster = begin with an empty list
-
-			// copy the Assignment's index to unSelectedAssignment;
-			
 			for (int i=0; i < assignmentList.size(); i++) {
-				unSelectedAssignments[i] = true;	// true means this element is used
-				selectedAssignments[i] = false;		// false means this element is empty
+				assigmentSelection.set(i,false);
 			}
-
 			
 	}
 		public void showRoster () {
-
-
-			System.out.println("-----------[Unselected]----------------------------");	
 			System.out.println("Instructors available for selection: ");
 			System.out.println("row: instructor_id, course_id, seats");
-			Iterator ita = assignmentList.iterator();
-			Assignment a = null;
-			int i=0;
 			
-			while (ita.hasNext()){
-				a = (Assignment) ita.next();
-				if (i<MAXSize){
-					if (unSelectedAssignments[i]== true){
-						System.out.println(i+": "+a.getInstructor().getId()+", "+a.getCourse().getId()+", "+a.getCapacity());
-					}
-					i++;					
-				}
-			}
-			
-			System.out.println("-----                                       ------");	
 			System.out.println("--------------[Selected] -------------------------");	
 			System.out.println("Instructors with assignment: ");
-			Iterator itb = assignmentList.iterator();
 			
-			i = 0;
-			while (itb.hasNext()){
-				a = (Assignment) itb.next();
-				if (i<MAXSize){
-					if (selectedAssignments[i]== true){
+			for (int i=0;i< assignmentList.size(); i++){
+				Assignment a = assignmentList.get(i);
+				if (assigmentSelection.get(i))	{
 						System.out.println(i+": "+a.getInstructor().getId()+", "+a.getCourse().getId()+", "+a.getCapacity());
-					}
-					i++;					
-				}
+					}						
 			}
+			System.out.println("-----------[Unselected]----------------------------");	
+			
+			for (int i=0;i< assignmentList.size(); i++){
+				Assignment a = assignmentList.get(i);
+				if (!assigmentSelection.get(i))	{
+						System.out.println(i+": "+a.getInstructor().getId()+", "+a.getCourse().getId()+", "+a.getCapacity());
+					}						
+			}
+			
 			System.out.println("-------End of List--------------------------------");
-
 			System.out.print("$roster selection >");
 		}
 	
