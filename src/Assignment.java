@@ -6,14 +6,25 @@
 
 public class Assignment {
 
-	Instructor instructor;
-	Course course;
-	int seats;
+	protected Instructor instructor;
+	protected Course course;
+	protected int seats;
 
 
 	public int getCapacity(){
 		return seats;
 
 	}
+
+	public Course getCourse(){
+		return course;
+
+	}
+	
+	public Instructor getInstructor(){
+		return instructor;
+
+	}
+	
 
 }

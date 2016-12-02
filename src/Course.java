@@ -44,6 +44,29 @@ public class Course {
 		}
 	}
 
+
+	public void removeSeats(int cycle, int seats){
+		Term term;
+		
+		if (terms == null) {
+			term = new Term();
+			term.id = cycle;	
+			term.availableSeats = seats;
+			this.terms = new ArrayList<Term>();
+			this.terms.add(term);
+		}
+		else {
+			for (int i=0; i< terms.size();i++){
+				term = terms.get(i);
+				if (term.id == cycle) {
+					term.availableSeats -= seats;
+					break;
+				}
+			}
+		}
+	}
+	
+	
 	public int getAvailableSeats(int cycle){
 		
 		if (terms != null) {

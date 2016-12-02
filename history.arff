@@ -1,0 +1,27 @@
+@relation university
+@attribute 'course2' { taken, none}
+@attribute 'course4' { taken, none}
+@attribute 'course6' { taken, none}
+@attribute 'course8' { taken, none}
+@attribute 'course10' { taken, none}
+@attribute 'course13' { taken, none}
+@attribute 'course16' { taken, none}
+@attribute 'course17' { taken, none}
+@attribute 'course19' { taken, none}
+@attribute 'course20' { taken, none}
+@attribute 'course23' { taken, none}
+@attribute 'course24' { taken, none}
+@attribute 'course25' { taken, none}
+@attribute 'course28' { taken, none}
+@attribute 'course29' { taken, none}
+@data
+none,taken,none,none,none,none,none,none,none,none,none,none,none,taken,none
+taken,taken,none,none,taken,none,none,none,none,none,none,none,none,none,none
+taken,none,none,taken,none,none,none,none,none,none,none,none,none,none,taken
+taken,taken,none,none,taken,none,none,none,none,none,none,taken,none,none,none
+none,none,none,taken,none,none,none,none,none,none,none,none,none,none,none
+taken,taken,none,taken,taken,none,none,none,none,none,none,none,none,none,none
+taken,taken,none,taken,none,none,none,none,none,none,none,none,none,none,none
+none,none,none,none,none,none,none,none,none,none,none,none,none,none,none
+none,taken,taken,none,none,none,none,none,none,none,none,none,none,none,none
+none,none,none,none,none,none,none,none,none,none,none,none,none,none,none
