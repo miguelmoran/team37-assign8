@@ -239,16 +239,17 @@ public class Simulator {
 		}
 	}
 
-	private  void readAcademicRecords() {
+	private  boolean readAcademicRecords() {
 		String csvFileToRead = folderPath + "records.csv";
 		BufferedReader br=null;
 		String line =  "";
 		String splitBy = ",";
-
+		boolean moreCycles = false;
+		
 		try{
 			InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
 			br = new BufferedReader(new InputStreamReader(i));
-
+			moreCycles= true;
 			while ((line = br.readLine())!=null){
 				String[] attributes = line.split(splitBy);	
 
@@ -271,6 +272,7 @@ public class Simulator {
 
 			}
 		}
+		return moreCycles;
 	}
 
 	private  void readPrerequisites() {
@@ -313,55 +315,41 @@ public class Simulator {
 		}
 	}
 
-	protected void readAssignments(){
-		String csvFileToRead = folderPath + "assignments_"+cycle+".csv";
-		
-		BufferedReader br=null;
-		String line =  "";
-		String splitBy = ",";
-
-		try{
-			InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
-			br = new BufferedReader(new InputStreamReader(i));
-
-			while ((line = br.readLine())!=null){
-				String[] assignments = line.split(splitBy);	
-
-				Assignment assignment = new Assignment();
-				if (assignments.length > 0) {
-					assignment.instructor = findInstructorById(Integer.parseInt(assignments[0]));
-					assignment.course = findCourseById(Integer.parseInt(assignments[1]));
-					assignment.seats = Integer.parseInt(assignments[2]);
-
-					if (assignment.course != null) {
-						assignment.course.assignSeats(cycle, assignment.seats);
-						
-					}
-
-					assignmentList.add(assignment);
-					assigmentSelection.add(false);
-				}
-			}
-
-		}
-		catch(FileNotFoundException e){
-			System.out.println("the test file: "+ csvFileToRead+ "doesn't exist. ");
-		} catch(IOException e) {
-			e.printStackTrace();
-		} finally{
-			if (br !=null) {
-				try{
-					br.close();
-				}
-				catch(IOException e) {
-					e.printStackTrace();
-				}
-
-			}
-		}
-		
-	}
 	
+
+
+
+protected void readAssignments(){
+        String csvFileToRead = folderPath + "assignments_"+cycle+".csv";
+        
+        BufferedReader br=null;
+        String line =  "";
+        String splitBy = ",";
+
+        try{
+            InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
+            br = new BufferedReader(new InputStreamReader(i));
+
+            while ((line = br.readLine())!=null){
+                String[] assignments = line.split(splitBy);    
+
+                Assignment assignment = new Assignment();
+                if (assignments.length > 0) {
+                    assignment.instructor = findInstructorById(Integer.parseInt(assignments[0]));
+                    assignment.course = findCourseById(Integer.parseInt(assignments[1]));
+                    assignment.seats = Integer.parseInt(assignments[2]);
+
+                    if (assignment.course != null) {
+                        assignment.course.assignSeats(cycle, assignment.seats);
+                        
+                    }
+
+                    assignmentList.add(assignment);
+                    assigmentSelection.add(false);
+                }
+            }
+
+        }
 	protected  void readRequests() {
 		String csvFileToRead = folderPath + "requests_"+cycle+".csv";
 		BufferedReader br=null;

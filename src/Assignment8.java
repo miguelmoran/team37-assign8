@@ -34,8 +34,12 @@ public class Assignment8 {
 		simulator.loadRecords();
 		
 		System.out.println("loading Instructor Assigments for Semester "+simulator.getCycle());
-		simulator.readAssignments();
-		simulator.analizeHistory();
+        boolean moreCycles= simulator.readAssignments();
+     
+        if (!moreCycles)
+            System.out.println("> stopping simulation - no more cycles");
+
+        simulator.analizeHistory();
 		
 		
 		while (!exit){
