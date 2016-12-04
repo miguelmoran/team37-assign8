@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Random;
 
 
+
+
 import weka.associations.Apriori;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
@@ -84,6 +86,103 @@ public class Simulator {
 		readAcademicRecords();
 		readPrerequisites();
 	}
+	
+	public void firstCycle() {
+		this.writeCycle();
+		this.writeRecords();
+	}
+	
+	public void writeCycle() {
+		
+
+		String cycleFileToWrite = folderPath + "cycle.csv";
+        List<String> lines = new ArrayList<String>();
+		    
+        System.out.println("Wrting cycle.csv for cycle: "+cycle);
+        lines.add(Integer.toString(cycle));
+        Utils.writeFile(cycleFileToWrite,lines);
+	
+	}
+	
+	public void writeRecords() {
+		String recordsFileToWrite = folderPath + "cache_records.csv";
+        List<String> lines = new ArrayList<String>();
+        String line = new String();
+        AcademicRecord a;
+        
+        System.out.println("Writing academic records: "+academicRecords.size()+" records");
+        if (academicRecords.size()>0)
+        	for(int i=0; i< academicRecords.size(); i++) {
+        		line = new String();
+        		a = academicRecords.get(i);
+
+        		line.concat(Integer.toString(a.student.uuid));
+        		line.concat(",");
+        		line.concat(Integer.toString(a.course.getId()));
+        		line.concat(",");
+        		line.concat(Integer.toString(a.instructor.getId()));
+        		line.concat(",");
+        		line.concat(a.comments);
+        		line.concat(",");
+        		line.concat(a.grade.toString());
+        		line.concat("\n");
+  
+        		lines.add(line);
+        	}
+        else
+        	lines.add("");
+
+		    
+        Utils.writeFile(recordsFileToWrite,lines);
+
+	
+	}
+
+	
+	public void loadCache() {
+		readStudents();
+		readCourses();
+		readInstructors();
+		readCycle();
+		readAcademicRecords();
+		readPrerequisites();
+		
+	}
+	
+	private  void readCycle() {
+		String csvFileToRead = folderPath + "cycle.csv";
+		BufferedReader br=null;
+		String line =  "";
+		String splitBy = ",";
+
+		try{
+			InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
+			br = new BufferedReader(new InputStreamReader(i));
+
+			while ((line = br.readLine())!=null){
+				String[] nextCycle = line.split(splitBy);	
+
+				cycle = Integer.parseInt(nextCycle[0]);
+			}
+
+		}
+		catch(FileNotFoundException e){
+			System.out.println("the test file: "+ csvFileToRead+ " doesn't exist. ");
+		} catch(IOException e) {
+			e.printStackTrace();
+		} finally{
+			if (br !=null) {
+				try{
+					br.close();
+				}
+				catch(IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
+	
 		
 	private void readStudents() {
 		String csvFileToRead = folderPath + "students.csv";
@@ -237,7 +336,14 @@ public class Simulator {
 	}
 
 	private  void readAcademicRecords() {
-		String csvFileToRead = folderPath + "records.csv";
+		
+		String csvFileToRead;
+		
+		if (cycle==1) {
+			csvFileToRead = folderPath + "records.csv";
+		} else {
+			csvFileToRead = folderPath + "cache_records.csv";
+		}
 		BufferedReader br=null;
 		String line =  "";
 		String splitBy = ",";
