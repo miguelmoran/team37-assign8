@@ -82,6 +82,7 @@ public class Assignment8 {
 				simulator.addValidRecords();
 				simulator.displayRecords();
 				simulator.displayWaitlist();
+				simulator.incrementWaitlistCycle();
 				System.out.print("continue simulation? [yes/no]: ");
 				break;
 				

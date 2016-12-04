@@ -236,17 +236,17 @@ public class Simulator {
 		}
 	}
 
-	private  boolean readAcademicRecords() {
+	private  void readAcademicRecords() {
 		String csvFileToRead = folderPath + "records.csv";
 		BufferedReader br=null;
 		String line =  "";
 		String splitBy = ",";
-		boolean moreCycles = false;
+
 		
 		try{
 			InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
 			br = new BufferedReader(new InputStreamReader(i));
-			moreCycles= true;
+
 			while ((line = br.readLine())!=null){
 				String[] attributes = line.split(splitBy);	
 
@@ -269,7 +269,6 @@ public class Simulator {
 
 			}
 		}
-		return moreCycles;
 	}
 
 	private  void readPrerequisites() {
@@ -312,15 +311,35 @@ public class Simulator {
 		}
 	}
 
-	
 
-<<<<<<< HEAD
-					assignmentList.add(assignment);
-					assigmentSelection.add(false);
-				}
-			}
+protected boolean readAssignments(){
+        String csvFileToRead = folderPath + "assignments_"+cycle+".csv";
+        
+        BufferedReader br=null;
+        String line =  "";
+        String splitBy = ",";
+		boolean moreCycles = false;
+		
+        try{
+            InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
+            br = new BufferedReader(new InputStreamReader(i));
+			moreCycles= true;
+			
+            while ((line = br.readLine())!=null){
+                String[] assignments = line.split(splitBy);    
 
-		}
+                Assignment assignment = new Assignment();
+                if (assignments.length > 0) {
+                    assignment.instructor = findInstructorById(Integer.parseInt(assignments[0]));
+                    assignment.course = findCourseById(Integer.parseInt(assignments[1]));
+                    assignment.seats = Integer.parseInt(assignments[2]);
+
+                    assignmentList.add(assignment);
+                    assigmentSelection.add(false);
+                }
+            }
+
+        }
 		catch(FileNotFoundException e){
 			System.out.println("the test file: "+ csvFileToRead+ "doesn't exist. ");
 		} catch(IOException e) {
@@ -333,45 +352,13 @@ public class Simulator {
 				catch(IOException e) {
 					e.printStackTrace();
 				}
+
 			}
 		}
-	}
-	
-=======
-
-
-protected void readAssignments(){
-        String csvFileToRead = folderPath + "assignments_"+cycle+".csv";
         
-        BufferedReader br=null;
-        String line =  "";
-        String splitBy = ",";
+		return moreCycles;
+}
 
-        try{
-            InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
-            br = new BufferedReader(new InputStreamReader(i));
-
-            while ((line = br.readLine())!=null){
-                String[] assignments = line.split(splitBy);    
-
-                Assignment assignment = new Assignment();
-                if (assignments.length > 0) {
-                    assignment.instructor = findInstructorById(Integer.parseInt(assignments[0]));
-                    assignment.course = findCourseById(Integer.parseInt(assignments[1]));
-                    assignment.seats = Integer.parseInt(assignments[2]);
-
-                    if (assignment.course != null) {
-                        assignment.course.assignSeats(cycle, assignment.seats);
-                        
-                    }
-
-                    assignmentList.add(assignment);
-                    assigmentSelection.add(false);
-                }
-            }
-
-        }
->>>>>>> bfc97228effd9fa108d88e3af65c4087bf42e15c
 	protected  void readRequests() {
 		
 		requestList.clear();
@@ -428,17 +415,19 @@ protected void readAssignments(){
 		
 		List<RequestRecord> toRemove = new ArrayList<RequestRecord>();
 		
+		System.out.println("Waitlist records");
 		//validate waitlisted courses
 		for(RequestRecord request : waitlist){
 			checkRequest(request);
 			
-			//remove from waitlist if no longer on waitlist
+			//mark to remove from waitlist if no longer on waitlist
 			if(request.requestResolution != RequestResolution.Invalid_NoAvailableSeats)
 			{
 				toRemove.add(request);
 			}
 		}
 		
+		System.out.println("RequestList records");
 		//validate newly loaded courses
 		for(RequestRecord request : requestList){
 			checkRequest(request);
@@ -446,6 +435,8 @@ protected void readAssignments(){
 		
 		for(RequestRecord request: toRemove){
 			waitlist.remove(request);
+			if(waitlist.contains(request))
+				waitlist.remove(request);
 			requestList.add(request);
 		}
 		
@@ -553,13 +544,21 @@ protected void readAssignments(){
 	public void displayWaitlist(){
 		//if on requestList and waitlist, output waitlist info
 		StringBuffer sb = new StringBuffer();
-		System.out.println("Wait Listed Requests");
+		System.out.println("\nWait Listed Requests");
 		for(RequestRecord request : waitlist){
 			sb.delete(0, sb.length());
 			
 			sb.append(request.student.uuid + ", " + request.student.name + ", ");
 			sb.append(request.course.id + ", " + request.course.title);
 			System.out.println(sb.toString());
+		}
+	}
+	
+	//used to allow waitlisted courses to take the next cycle of classes
+	public void incrementWaitlistCycle(){
+		
+		for(RequestRecord request: waitlist){
+			request.cycle++;
 		}
 	}
 	
@@ -736,7 +735,7 @@ protected void readAssignments(){
 	}
 	
 	public void displayRecords(){
-		System.out.println("Academic Records");
+		System.out.println("\nAcademic Records");
 		for(AcademicRecord record : academicRecords){
 
 			System.out.println(record.student.uuid + ", " + record.course.id + ", " + record.instructor.uuid + ", " + record.comments + ", " + record.grade);
