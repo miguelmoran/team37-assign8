@@ -117,16 +117,15 @@ public class Simulator {
         		line = new String();
         		a = academicRecords.get(i);
 
-        		line.concat(Integer.toString(a.student.uuid));
-        		line.concat(",");
-        		line.concat(Integer.toString(a.course.getId()));
-        		line.concat(",");
-        		line.concat(Integer.toString(a.instructor.getId()));
-        		line.concat(",");
-        		line.concat(a.comments);
-        		line.concat(",");
-        		line.concat(a.grade.toString());
-        		line.concat("\n");
+        		line = Integer.toString(a.student.uuid);
+        		line = line.concat(",");
+        		line = line.concat(Integer.toString(a.course.getId()));
+        		line = line.concat(",");
+        		line = line.concat(Integer.toString(a.instructor.getId()));
+        		line = line.concat(",");
+        		line = line.concat(a.comments);
+        		line = line.concat(",");
+        		line = line.concat(a.grade.toString());
   
         		lines.add(line);
         	}
@@ -163,6 +162,8 @@ public class Simulator {
 				String[] nextCycle = line.split(splitBy);	
 
 				cycle = Integer.parseInt(nextCycle[0]);
+				//DEBUG
+				System.out.println(cycle);
 			}
 
 		}
@@ -421,7 +422,7 @@ protected boolean readAssignments(){
         String splitBy = ",";
 		boolean moreCycles = false;
 
-		if (!selectedInstructors.isEmpty())
+/*		if (!selectedInstructors.isEmpty())
 			selectedInstructors.clear();;
 		
 		if (!assignmentSelection.isEmpty())
@@ -430,6 +431,12 @@ protected boolean readAssignments(){
 		if (!assignmentList.isEmpty())
 			assignmentList.clear();
 
+		if (!assignmentList.isEmpty())
+			assignmentList.clear();*/
+		selectedInstructors = new ArrayList<Integer>();
+		assignmentSelection = new ArrayList<Boolean>();
+		assignmentList = new ArrayList<Assignment>();
+		
         try{
         	br = new BufferedReader(new FileReader(csvFileToRead));
 			moreCycles= true;
@@ -912,26 +919,34 @@ protected boolean readAssignments(){
 		return new Integer(cycle).toString();
 	}
 	
-		public void showRoster () {
+	public void showRoster () {
 			System.out.println("Instructors available for selection: ");
 			System.out.println("row: instructor_id, course_id, seats");
 			
 			System.out.println("--------------[Selected] -------------------------");	
 			System.out.println("Instructors with assignment: ");
 			
+
 			for (int i=0;i< assignmentList.size(); i++){
 				Assignment a = assignmentList.get(i);
-					if (assignmentSelection.size()>0 && assignmentSelection.get(i))	{
-						System.out.println(i+": "+a.getInstructor().getId()+", "+a.getCourse().getId()+", "+a.getCapacity());
+					if (i < assignmentSelection.size()) {
+						if (assignmentSelection.get(i))	{
+							System.out.println(i+": "+a.getInstructor().getId()+", "+a.getCourse().getId()+", "+a.getCapacity());
+						}
 					}						
 			}
 			System.out.println("-----------[Unselected]----------------------------");	
 			
 			for (int i=0;i< assignmentList.size(); i++){
 				Assignment a = assignmentList.get(i);
-				if (!assignmentSelection.get(i) || assignmentSelection.size()==0)	{
+				if (i < assignmentSelection.size())	{
+					if (!assignmentSelection.get(i))
 						System.out.println(i+": "+a.getInstructor().getId()+", "+a.getCourse().getId()+", "+a.getCapacity());
-					}						
+					}
+				else {
+					System.out.println(i+": "+a.getInstructor().getId()+", "+a.getCourse().getId()+", "+a.getCapacity());
+
+				}
 			}
 			
 			System.out.println("-------End of List--------------------------------");

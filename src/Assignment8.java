@@ -28,12 +28,12 @@ public class Assignment8 {
 		String command = args[0];
 		
 		System.out.println(">command: "+command);
-		if (command =="resume") {
-			simulator.resume();
+		if (command.compareToIgnoreCase("resume") == 0) {
+			System.out.println("loading cached Records");
 			simulator.loadCache();
 		}
 		else {
-			//create cache files
+			
 			simulator.firstCycle();
 			System.out.println("loading Records");
 			simulator.loadRecords();
@@ -85,6 +85,7 @@ public class Assignment8 {
 				simulator.displayRecords();
 				simulator.displayWaitlist();
 				simulator.incrementWaitlistCycle();
+				simulator.resume();
 				simulator.writeCycle();
 				simulator.writeRecords();
 				System.out.print("continue simulation? [yes/no]: ");
@@ -97,7 +98,6 @@ public class Assignment8 {
 				scanner.close();
 				break;
 			case "yes":
-				simulator.resume();
 				System.out.println("loading Instructor Assigments for Semester "+simulator.getCycle());
 		        moreCycles= simulator.readAssignments();
 				System.out.println("association analysis of previous course selections");
