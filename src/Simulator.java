@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Random;
 
 
+
+
 import weka.associations.Apriori;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
@@ -25,7 +27,7 @@ public class Simulator {
 	protected  List<RequestRecord> waitlist = new ArrayList<RequestRecord>();
 
     protected List<Integer> selectedInstructors = new ArrayList<Integer>();
-	protected List<Boolean> assigmentSelection = new ArrayList<Boolean>();
+	protected List<Boolean> assignmentSelection = new ArrayList<Boolean>();
 	
     
 	
@@ -84,6 +86,103 @@ public class Simulator {
 		readAcademicRecords();
 		readPrerequisites();
 	}
+	
+	public void firstCycle() {
+		this.writeCycle();
+		this.writeRecords();
+	}
+	
+	public void writeCycle() {
+		
+
+		String cycleFileToWrite = folderPath + "cycle.csv";
+        List<String> lines = new ArrayList<String>();
+		    
+        System.out.println("Wrting cycle.csv for cycle: "+cycle);
+        lines.add(Integer.toString(cycle));
+        Utils.writeFile(cycleFileToWrite,lines);
+	
+	}
+	
+	public void writeRecords() {
+		String recordsFileToWrite = folderPath + "cache_records.csv";
+        List<String> lines = new ArrayList<String>();
+        String line = new String();
+        AcademicRecord a;
+        
+        System.out.println("Writing academic records: "+academicRecords.size()+" records");
+        if (academicRecords.size()>0)
+        	for(int i=0; i< academicRecords.size(); i++) {
+        		line = new String();
+        		a = academicRecords.get(i);
+
+        		line.concat(Integer.toString(a.student.uuid));
+        		line.concat(",");
+        		line.concat(Integer.toString(a.course.getId()));
+        		line.concat(",");
+        		line.concat(Integer.toString(a.instructor.getId()));
+        		line.concat(",");
+        		line.concat(a.comments);
+        		line.concat(",");
+        		line.concat(a.grade.toString());
+        		line.concat("\n");
+  
+        		lines.add(line);
+        	}
+        else
+        	lines.add("");
+
+		    
+        Utils.writeFile(recordsFileToWrite,lines);
+
+	
+	}
+
+	
+	public void loadCache() {
+		readStudents();
+		readCourses();
+		readInstructors();
+		readCycle();
+		readAcademicRecords();
+		readPrerequisites();
+		
+	}
+	
+	private  void readCycle() {
+		String csvFileToRead = folderPath + "cycle.csv";
+		BufferedReader br=null;
+		String line =  "";
+		String splitBy = ",";
+
+		try{
+			InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
+			br = new BufferedReader(new InputStreamReader(i));
+
+			while ((line = br.readLine())!=null){
+				String[] nextCycle = line.split(splitBy);	
+
+				cycle = Integer.parseInt(nextCycle[0]);
+			}
+
+		}
+		catch(FileNotFoundException e){
+			System.out.println("the test file: "+ csvFileToRead+ " doesn't exist. ");
+		} catch(IOException e) {
+			e.printStackTrace();
+		} finally{
+			if (br !=null) {
+				try{
+					br.close();
+				}
+				catch(IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
+	
 		
 	private void readStudents() {
 		String csvFileToRead = folderPath + "students.csv";
@@ -237,7 +336,14 @@ public class Simulator {
 	}
 
 	private  void readAcademicRecords() {
-		String csvFileToRead = folderPath + "records.csv";
+		
+		String csvFileToRead;
+		
+		if (cycle==1) {
+			csvFileToRead = folderPath + "records.csv";
+		} else {
+			csvFileToRead = folderPath + "cache_records.csv";
+		}
 		BufferedReader br=null;
 		String line =  "";
 		String splitBy = ",";
@@ -319,7 +425,16 @@ protected boolean readAssignments(){
         String line =  "";
         String splitBy = ",";
 		boolean moreCycles = false;
+
+		if (!selectedInstructors.isEmpty())
+			selectedInstructors.clear();;
 		
+		if (!assignmentSelection.isEmpty())
+			assignmentSelection.clear();;
+		
+		if (!assignmentList.isEmpty())
+			assignmentList.clear();
+
         try{
             InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
             br = new BufferedReader(new InputStreamReader(i));
@@ -335,7 +450,7 @@ protected boolean readAssignments(){
                     assignment.seats = Integer.parseInt(assignments[2]);
 
                     assignmentList.add(assignment);
-                    assigmentSelection.add(false);
+                    assignmentSelection.add(false);
                 }
             }
 
@@ -344,7 +459,7 @@ protected boolean readAssignments(){
 			System.out.println("the test file: "+ csvFileToRead+ "doesn't exist. ");
 		} catch(IOException e) {
 			e.printStackTrace();
-		} finally{
+		} /*finally{
 			if (br !=null) {
 				try{
 					br.close();
@@ -352,12 +467,13 @@ protected boolean readAssignments(){
 				catch(IOException e) {
 					e.printStackTrace();
 				}
-
 			}
-		}
+		}*/
         
+
 		return moreCycles;
 }
+
 
 	protected  void readRequests() {
 		
@@ -641,11 +757,11 @@ protected boolean readAssignments(){
 			// first check to see if this row is in the un-assigned roster
 			if (selection < assignmentList.size() && selection >=0 ) {
 				
-				if (!assigmentSelection.get(selection)){		// this is a valid row or index
+				if (!assignmentSelection.get(selection)){		// this is a valid row or index
 						Assignment a =  assignmentList.get(selection);
 				
 						if (!selectedInstructors.contains(a.getInstructor().getId())) {	
-							assigmentSelection.set(selection,true);
+							assignmentSelection.set(selection,true);
 							selectedInstructors.add(a.getInstructor().getId());
 							
 							System.out.println("The Instructor "+a.getInstructor().getId()+" selected!");
@@ -685,8 +801,8 @@ protected boolean readAssignments(){
 		if (selectedInstructors.size() > 0){
 			
 			if (selection < assignmentList.size() && selection >=0 ) {
-				if (assigmentSelection.get(selection)){		// this row was previously added
-					assigmentSelection.set(selection,false);
+				if (assignmentSelection.get(selection)){		// this row was previously added
+					assignmentSelection.set(selection,false);
 					
 					Assignment a =  assignmentList.get(selection);
 					
@@ -804,22 +920,6 @@ protected boolean readAssignments(){
 		return new Integer(cycle).toString();
 	}
 	
-	//Leland -- step 5: Select Instructor Assignments
-		// required input or access to these
-		// 1) output from WEKA
-		// 2) assignmentList filled (from the current cycle)
-		// 3) budget or maximum number of instructors to hire (assumed to be 5, using MAXInstructors)
-		// 
-		// resulting output
-		// a) courses with seats, based on hired instructors
-		// b) quit command to quit the simulation
-		
-		public void selectInstructors () {
-			for (int i=0; i < assignmentList.size(); i++) {
-				assigmentSelection.set(i,false);
-			}
-			
-	}
 		public void showRoster () {
 			System.out.println("Instructors available for selection: ");
 			System.out.println("row: instructor_id, course_id, seats");
@@ -829,7 +929,7 @@ protected boolean readAssignments(){
 			
 			for (int i=0;i< assignmentList.size(); i++){
 				Assignment a = assignmentList.get(i);
-				if (assigmentSelection.get(i))	{
+					if (assignmentSelection.size()>0 && assignmentSelection.get(i))	{
 						System.out.println(i+": "+a.getInstructor().getId()+", "+a.getCourse().getId()+", "+a.getCapacity());
 					}						
 			}
@@ -837,7 +937,7 @@ protected boolean readAssignments(){
 			
 			for (int i=0;i< assignmentList.size(); i++){
 				Assignment a = assignmentList.get(i);
-				if (!assigmentSelection.get(i))	{
+				if (!assignmentSelection.get(i) || assignmentSelection.size()==0)	{
 						System.out.println(i+": "+a.getInstructor().getId()+", "+a.getCourse().getId()+", "+a.getCapacity());
 					}						
 			}
