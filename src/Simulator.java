@@ -298,7 +298,8 @@ public class Simulator {
 					course.id = Integer.parseInt(courses[0]);
 					course.title = courses[1];
 
-					/*for (int i=2; i< courses.length; i++)
+					/*
+					 * for (int i=2; i< courses.length; i++)
 					{
 						term.name = courses[i];
 						terms.add(term);
