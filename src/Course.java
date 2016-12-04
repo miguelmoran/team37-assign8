@@ -22,6 +22,16 @@ public class Course {
 		return id;
 	}
 	
+	public void decrementSeats(int cycle){
+		Term term; 
+		
+		for (int i=0; i< terms.size();i++){
+			term = terms.get(i);
+			if (term.id == cycle) {
+				term.availableSeats--;
+			}
+		}
+	}
 	
 	public void assignSeats(int cycle, int seats){
 		Term term;

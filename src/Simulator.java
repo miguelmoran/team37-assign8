@@ -83,9 +83,6 @@ public class Simulator {
 		readInstructors();
 		readAcademicRecords();
 		readPrerequisites();
-		
-		
-		
 	}
 		
 	private void readStudents() {
@@ -333,11 +330,6 @@ public class Simulator {
 					assignment.course = findCourseById(Integer.parseInt(assignments[1]));
 					assignment.seats = Integer.parseInt(assignments[2]);
 
-					if (assignment.course != null) {
-						assignment.course.assignSeats(cycle, assignment.seats);
-						
-					}
-
 					assignmentList.add(assignment);
 					assigmentSelection.add(false);
 				}
@@ -356,23 +348,24 @@ public class Simulator {
 				catch(IOException e) {
 					e.printStackTrace();
 				}
-
 			}
 		}
-		
 	}
 	
 	protected  void readRequests() {
+		
+		requestList.clear();
+		
 		String csvFileToRead = folderPath + "requests_"+cycle+".csv";
 		BufferedReader br=null;
 		String line =  "";
 		String splitBy = ",";
 
 		try{
+			//todo breaks when there are no more files
 			InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
 			br = new BufferedReader(new InputStreamReader(i));
 
-			RequestResolution resolution;
 			while ((line = br.readLine())!=null){
 				String[] requests = line.split(splitBy);	
 
@@ -385,30 +378,10 @@ public class Simulator {
 
 					request.addStudent(findStudentById(Integer.parseInt(requests[0])));
 					request.addCourse(findCourseById(Integer.parseInt(requests[1])));
-					resolution = request.calculateStatus();
-
-					switch (resolution){
-					case Valid:
-						validRequests++;
-						break;
-					case Invalid_MissingPrerequisites: 
-						invalid_missingPrerequisites++;
-						break;
-					case Invalid_HasAlreadyTaken:
-						invalid_hasAlreadyTaken++;
-						break;
-					case Invalid_NoAvailableSeats:
-						invalid_noAvailableSeats++;
-						break;
-					default:
-						break;
-
-					}
 
 					requestList.add(request);
 				}
 			}
-
 		}
 		catch(FileNotFoundException e){
 			System.out.println("the test file: "+ csvFileToRead+ "doesn't exist. ");
@@ -461,7 +434,7 @@ public class Simulator {
 	private void checkRequest(RequestRecord request){
 		
 		request.calculateStatus();
-		
+		System.out.print("request (" + request.student.uuid + ", " + request.course.id + "): ");
 		if(request.requestResolution == RequestResolution.Valid){
 			System.out.println("valid");
 			validRequests++;
@@ -478,34 +451,44 @@ public class Simulator {
 			System.out.println("no remaining seats at this time: (re-)added to waitlist");
 			invalid_noAvailableSeats++;
 
-			//add the item to the waitlist for future processing if not already there
-			if(!waitlist.contains(request))
+			//add the item to the waitlist for next waitlist cycle if not already there
+			boolean exists = false;
+				for(RequestRecord record : waitlist)
+				{
+					if(record.student.uuid == request.student.uuid && record.course.id == request.course.id)
+						exists = true;
+				}
+			if(!exists){
 				waitlist.add(request);
+			}
 		}
 	}
 	
 	public void displaySemesterStatistics(){
-		System.out.println("Semester Statistics");
+		
+		int semesterTotalExamined = validRequests + invalid_hasAlreadyTaken + invalid_missingPrerequisites + invalid_noAvailableSeats;
+		
 		StringBuilder sb = new StringBuilder();
-	
-		sb.append("Examined: " +  waitlist.size() + requestList.size() + " Granted: " + validRequests);
-		sb.append(" Failed: " + (invalid_missingPrerequisites + invalid_hasAlreadyTaken) + "Wait Listed: " + invalid_noAvailableSeats); 
+		sb.append("\nSemester Statistics\n");
+		sb.append("Examined: " +  semesterTotalExamined + " Granted: " + validRequests);
+		sb.append(" Failed: " + (invalid_missingPrerequisites + invalid_hasAlreadyTaken) + " Wait Listed: " + invalid_noAvailableSeats + "\n"); 
 		
-		System.out.println(sb.toString());
 		
-		totalExamined += waitlist.size() + requestList.size();
+		totalExamined += semesterTotalExamined;
 		totalValid += validRequests;
 		totalFailed += invalid_missingPrerequisites;
 		totalFailed += invalid_hasAlreadyTaken;
 		totalWaitlisted += invalid_noAvailableSeats;
 		
-		System.out.println("Total Statistics");
+		sb.append("Total Statistics\n");
 		sb.append("Examined: " +  totalExamined + " Granted: " + totalValid);
 		sb.append(" Failed: " + totalFailed + " Wait Listed: " + totalWaitlisted); 
 		
+		System.out.println(sb.toString());
+		
 	}
 	
-	public void addRecords(){
+	public void addValidRecords(){
 	
 		for(RequestRecord request : requestList){
 			if(request.requestResolution == RequestResolution.Valid){
@@ -550,6 +533,7 @@ public class Simulator {
 	public void displayWaitlist(){
 		//if on requestList and waitlist, output waitlist info
 		StringBuffer sb = new StringBuffer();
+		System.out.println("Wait Listed Requests");
 		for(RequestRecord request : waitlist){
 			sb.delete(0, sb.length());
 			
@@ -561,7 +545,7 @@ public class Simulator {
 	
 	protected  void analizeHistory() {
 		
-		readAcademicRecords();
+		//readAcademicRecords();
 	
 		String arffFileToWrite = folderPath + "history.arff";
         List<String> lines = new ArrayList<String>();
@@ -648,23 +632,25 @@ public class Simulator {
 							selectedInstructors.add(a.getInstructor().getId());
 							
 							System.out.println("The Instructor "+a.getInstructor().getId()+" selected!");
-						} else {
+							
+							for (int j=0; j<courseList.size(); j++) {
+								Course c = courseList.get(j);
+								if (c.getId() == a.course.getId()){
+									c.assignSeats(cycle,a.getCapacity());
+									break;
+								}
+							}
+						} 
+						else {
 							System.out.println("The instructor "+a.getInstructor().getId()+" has already been assigned.");
 						}
-						
-						for (int j=0; j<courseList.size(); j++) {
-							Course c = courseList.get(j);
-							if (c.getId() == a.course.getId()){
-								c.assignSeats(cycle,a.getCapacity());
-								break;
-							}
-						}
-						
-				} else {
+				} 
+				else {
 					System.out.println("The row "+selection+", has already been added");
 				}
 				
-			} else {
+			} 
+			else {
 				System.out.println("Invalid selection, please choose the row number from the unselected roster to add");
 			}
 			
@@ -729,29 +715,12 @@ public class Simulator {
 
 	}
 	
-	
-	public void checkRequest(int studentId,int courseId){
-		RequestRecord request = new RequestRecord(cycle);
-		request.student = findStudentById(studentId);
-		request.course = findCourseById(courseId);
-		request.calculateStatus();
-		requestList.add(request);
-		switch (request.requestResolution){
-		case Valid:
-			System.out.println("> request is valid");
-			break;
-		case Invalid_MissingPrerequisites:
-			System.out.println("> student is missing one or more prerequisites");		
-			break;
-		case Invalid_HasAlreadyTaken:
-			System.out.println("> student has already taken the course with a grade of C or higher");
-			break;
-		case Invalid_NoAvailableSeats:
-			System.out.println("> no remaining seats available for the course at this time");
-			break;
+	public void displayRecords(){
+		System.out.println("Academic Records");
+		for(AcademicRecord record : academicRecords){
+
+			System.out.println(record.student.uuid + ", " + record.course.id + ", " + record.instructor.uuid + ", " + record.comments + ", " + record.grade);
 		}
-		
-		
 	}
 	
 	protected Instructor findInstructorByCourse(Course course){
@@ -775,7 +744,7 @@ public class Simulator {
 				break;
 			}
 		} 
-		return (courseFound)? courseList.get(i) : null;
+		return courseFound ? courseList.get(i) : null;
 
 	}
 

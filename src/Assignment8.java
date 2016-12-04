@@ -65,17 +65,20 @@ public class Assignment8 {
 			case "show_catalogue":
 				System.out.println("Course Catalogue: ");
 				// call some helper method to display the courses with seats > 0
+				
 				System.out.print("$roster selection >");
 				break;
 		
 			case "submit":
 				System.out.println("selections finalized- now processing requests for Semester "+simulator.getCycle());
 				
+				simulator.readRequests();
 				simulator.validateCourseRequests();
 				simulator.displaySemesterStatistics();
-				simulator.addRecords();
+				simulator.addValidRecords();
+				simulator.displayRecords();
 				simulator.displayWaitlist();
-				System.out.println("continue simulation? [yes/no]");
+				System.out.print("continue simulation? [yes/no]: ");
 				break;
 				
 			case "quit": 
@@ -103,33 +106,8 @@ public class Assignment8 {
 				System.out.println("quit             - quit the simulation.");
 				
 				break;
-				
 			}
-
-			
 		}
-
-
-
-	}
-	
-	private static void checkRequests(Simulator simulator) {
-		int studentId=0;
-		int courseId=0;
-
-		if (attributes == null || attributes.length==0  || !Utils.isStringInt(attributes[0])) {
-			System.out.println("> Missing student Id");
-			return;
-		}
-		if (attributes == null || attributes.length<2){
-			System.out.println("> Missing course Id");
-			return;
-		}
-		studentId = Integer.parseInt(attributes[0].trim());
-		courseId = Integer.parseInt(attributes[1].trim());
-
-
-		simulator.checkRequest(studentId,courseId);
 	}
 	
 	

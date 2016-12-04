@@ -64,7 +64,7 @@ public class RequestRecord {
 		int availableSeats = this.course.getAvailableSeats(cycle);
 		if(availableSeats>0 )
 		{
-				this.course.assignSeats(cycle, availableSeats--);
+				this.course.decrementSeats(cycle);
 				this.status = true;
 				this.requestResolution = RequestResolution.Valid;
 				

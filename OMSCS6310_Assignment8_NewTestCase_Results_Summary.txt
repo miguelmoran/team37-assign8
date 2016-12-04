@@ -1,0 +1,131 @@
+...
+
+beginning instructor selections for Semester 25
+
+...after selections...
+
+Semester Statistics
+Examined: 27 Granted: 10 Failed: 5 Wait Listed: 12
+Total Statistics
+Examined: 352 Granted: 161 Failed: 50 Wait Listed: 141
+
+...after request validations...
+
+beginning instructor selections for Semester 26
+
+...after selections...
+
+Semester Statistics
+Examined: 23 Granted: 11 Failed: 3 Wait Listed: 9
+Total Statistics
+Examined: 375 Granted: 172 Failed: 53 Wait Listed: 150
+
+...after request validations...
+
+beginning instructor selections for Semester 27
+
+...after selections...
+
+Semester Statistics
+Examined: 25 Granted: 7 Failed: 5 Wait Listed: 13
+Total Statistics
+Examined: 400 Granted: 179 Failed: 58 Wait Listed: 163
+
+...after request validations...
+
+beginning instructor selections for Semester 28
+
+...after selections...
+
+Semester Statistics
+Examined: 25 Granted: 6 Failed: 9 Wait Listed: 10
+Total Statistics
+Examined: 425 Granted: 185 Failed: 67 Wait Listed: 173
+
+...after request validations...
+
+beginning instructor selections for Semester 29
+
+...after selections...
+
+Semester Statistics
+Examined: 16 Granted: 6 Failed: 2 Wait Listed: 8
+Total Statistics
+Examined: 441 Granted: 191 Failed: 69 Wait Listed: 181
+
+...after request validations...
+
+beginning instructor selections for Semester 30
+
+...after selections...
+
+Semester Statistics
+Examined: 15 Granted: 9 Failed: 2 Wait Listed: 4
+Total Statistics
+Examined: 456 Granted: 200 Failed: 71 Wait Listed: 185
+
+...after request validations...
+
+beginning instructor selections for Semester 31
+
+...after selections...
+
+Semester Statistics
+Examined: 11 Granted: 7 Failed: 2 Wait Listed: 2
+Total Statistics
+Examined: 467 Granted: 207 Failed: 73 Wait Listed: 187
+
+...after request validations...
+
+beginning instructor selections for Semester 32
+
+...after selections...
+
+Semester Statistics
+Examined: 6 Granted: 3 Failed: 1 Wait Listed: 2
+Total Statistics
+Examined: 473 Granted: 210 Failed: 74 Wait Listed: 189
+
+...after request validations...
+
+Apriori
+=======
+
+Minimum support: 0.9 (49 instances)
+Minimum metric <confidence>: 0.9
+Number of cycles performed: 2
+
+Generated sets of large itemsets:
+
+Size of set of large itemsets L(1): 4
+
+Size of set of large itemsets L(2): 6
+
+Size of set of large itemsets L(3): 3
+
+Best rules found:
+
+ 1. course15=none 52 ==> course26=none 52    <conf:(1)> lift:(1.02) lev:(0.02) [0] conv:(0.95)
+ 2. course15=none course28=none 50 ==> course26=none 50    <conf:(1)> lift:(1.02) lev:(0.02) [0] conv:(0.91)
+ 3. course15=none course21=none 50 ==> course26=none 50    <conf:(1)> lift:(1.02) lev:(0.02) [0] conv:(0.91)
+ 4. course28=none 53 ==> course26=none 52    <conf:(0.98)> lift:(1) lev:(-0) [0] conv:(0.48)
+ 5. course21=none 53 ==> course26=none 52    <conf:(0.98)> lift:(1) lev:(-0) [0] conv:(0.48)
+ 6. course28=none course21=none 51 ==> course26=none 50    <conf:(0.98)> lift:(1) lev:(-0) [0] conv:(0.46)
+ 7. course26=none 54 ==> course15=none 52    <conf:(0.96)> lift:(1.02) lev:(0.02) [0] conv:(0.98)
+ 8. course26=none 54 ==> course28=none 52    <conf:(0.96)> lift:(1) lev:(-0) [0] conv:(0.65)
+ 9. course26=none 54 ==> course21=none 52    <conf:(0.96)> lift:(1) lev:(-0) [0] conv:(0.65)
+10. course21=none 53 ==> course28=none 51    <conf:(0.96)> lift:(1) lev:(-0) [0] conv:(0.64)
+
+beginning instructor selections for Semester 33
+
+...after selections...
+
+Semester Statistics
+Examined: 9 Granted: 7 Failed: 0 Wait Listed: 2
+Total Statistics
+Examined: 482 Granted: 217 Failed: 74 Wait Listed: 191
+
+...after request validations...
+
+$continue simulation? [yes/no]: no
+simulation halted
