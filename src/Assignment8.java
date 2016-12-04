@@ -20,7 +20,7 @@ public class Assignment8 {
 	 */
 	public static void main(String[] args) {
 
-		Simulator simulator = new Simulator("");
+		Simulator simulator = new Simulator();
 
 		Scanner scanner = new Scanner(System.in);
 		boolean exit = false;
@@ -44,9 +44,9 @@ public class Assignment8 {
      
         if (!moreCycles) {
             System.out.println("> stopping simulation - no more cycles");
-	    exit = true;
-	}
-	else
+            exit = true;
+        }
+        else
         	simulator.analizeHistory();
 		
 		

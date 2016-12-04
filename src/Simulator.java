@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -47,7 +48,7 @@ public class Simulator {
 	
 
 	public Simulator(){
-		folderPath = "";
+		folderPath = Assignment8.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		initialize();
 	}
 
@@ -156,8 +157,7 @@ public class Simulator {
 		String splitBy = ",";
 
 		try{
-			InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
-			br = new BufferedReader(new InputStreamReader(i));
+			br = new BufferedReader(new FileReader(csvFileToRead));
 
 			while ((line = br.readLine())!=null){
 				String[] nextCycle = line.split(splitBy);	
@@ -193,8 +193,8 @@ public class Simulator {
 
 		try{
 
-			InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
-			br = new BufferedReader(new InputStreamReader(i));
+			
+			br = new BufferedReader(new FileReader(csvFileToRead));
 			while ((line = br.readLine())!=null){
 				String[] students = line.split(splitBy);	
 
@@ -239,8 +239,7 @@ public class Simulator {
 		String splitBy = ",";
 
 		try{
-			InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
-			br = new BufferedReader(new InputStreamReader(i));
+			br = new BufferedReader(new FileReader(csvFileToRead));
 
 			while ((line = br.readLine())!=null){
 				String[] instructors = line.split(splitBy);	
@@ -286,9 +285,7 @@ public class Simulator {
 		String splitBy = ",";
 
 		try{
-			InputStream inputStream =this.getClass().getResourceAsStream(csvFileToRead);
-			br = new BufferedReader(new InputStreamReader(inputStream));
-
+			br = new BufferedReader(new FileReader(csvFileToRead));
 			while ((line = br.readLine())!=null){
 				String[] courses = line.split(splitBy);	
 
@@ -350,8 +347,7 @@ public class Simulator {
 
 		
 		try{
-			InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
-			br = new BufferedReader(new InputStreamReader(i));
+			br = new BufferedReader(new FileReader(csvFileToRead));
 
 			while ((line = br.readLine())!=null){
 				String[] attributes = line.split(splitBy);	
@@ -384,8 +380,7 @@ public class Simulator {
 		String splitBy = ",";
 
 		try{
-			InputStream inputStream =this.getClass().getResourceAsStream(csvFileToRead);
-			br = new BufferedReader(new InputStreamReader(inputStream));
+			br = new BufferedReader(new FileReader(csvFileToRead));
 
 			while ((line = br.readLine())!=null){
 				String[] prerequisites = line.split(splitBy);	
@@ -436,8 +431,7 @@ protected boolean readAssignments(){
 			assignmentList.clear();
 
         try{
-            InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
-            br = new BufferedReader(new InputStreamReader(i));
+        	br = new BufferedReader(new FileReader(csvFileToRead));
 			moreCycles= true;
 			
             while ((line = br.readLine())!=null){
@@ -486,8 +480,7 @@ protected boolean readAssignments(){
 
 		try{
 			//todo breaks when there are no more files
-			InputStream i =this.getClass().getResourceAsStream(csvFileToRead);
-			br = new BufferedReader(new InputStreamReader(i));
+			br = new BufferedReader(new FileReader(csvFileToRead));
 
 			while ((line = br.readLine())!=null){
 				String[] requests = line.split(splitBy);	
@@ -678,8 +671,7 @@ protected boolean readAssignments(){
 	
 	protected  void analizeHistory() {
 		
-		//readAcademicRecords();
-	
+		
 		String arffFileToWrite = folderPath + "history.arff";
         List<String> lines = new ArrayList<String>();
 		    
