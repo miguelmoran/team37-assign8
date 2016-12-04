@@ -435,8 +435,6 @@ protected boolean readAssignments(){
 		
 		for(RequestRecord request: toRemove){
 			waitlist.remove(request);
-			if(waitlist.contains(request))
-				waitlist.remove(request);
 			requestList.add(request);
 		}
 		
