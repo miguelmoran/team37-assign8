@@ -715,7 +715,10 @@ protected boolean readAssignments(){
 			
 			loader.setSource(new File(arffFileToWrite));
 			data = loader.getDataSet();
+			data.setClassIndex(data.numAttributes()-1);
+			
 			Apriori apriori = new Apriori();
+			apriori.setClassIndex(data.classIndex());
 		    apriori.buildAssociations(data);
 		    System.out.println(apriori);
 			
