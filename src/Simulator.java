@@ -725,11 +725,11 @@ protected boolean readAssignments(){
 			apriori.setCar(true);
 			apriori.setClassIndex(-1);
 			apriori.setDelta(0.05);
-			apriori.setDoNotCheckCapabilities(false);
+			apriori.setDoNotCheckCapabilities(true);
 			apriori.setLowerBoundMinSupport(0.1);
 			//apriori.setMetricType(d); //confidence
 			apriori.setMinMetric(0.9);
-			apriori.setNumRules(10);
+			apriori.setNumRules(5);
 			apriori.setOutputItemSets(false);
 			apriori.setRemoveAllMissingCols(false);
 			apriori.setSignificanceLevel(-1.0);
