@@ -455,11 +455,9 @@ protected boolean readAssignments(){
             }
 
         }
-		catch(FileNotFoundException e){
-			System.out.println("the test file: "+ csvFileToRead+ "doesn't exist. ");
-		} catch(IOException e) {
-			e.printStackTrace();
-		} /*finally{
+		catch(Exception e){
+			System.out.println("the test file: "+ csvFileToRead+ " doesn't exist. ");
+		}  /*finally{
 			if (br !=null) {
 				try{
 					br.close();
