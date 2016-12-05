@@ -722,8 +722,8 @@ protected boolean readAssignments(){
 			
 			
 			Apriori apriori = new Apriori();
+			apriori.setCar(true);
 			apriori.setClassIndex(-1);
-			apriori.setCar(false);
 			apriori.setDelta(0.05);
 			apriori.setDoNotCheckCapabilities(false);
 			apriori.setLowerBoundMinSupport(0.1);
@@ -734,8 +734,8 @@ protected boolean readAssignments(){
 			apriori.setRemoveAllMissingCols(false);
 			apriori.setSignificanceLevel(-1.0);
 			apriori.setTreatZeroAsMissing(false);
-			apriori.setUpperBoundMinSupport(1.0);
-			apriori.setVerbose(false);
+			apriori.setUpperBoundMinSupport(0.65);
+			apriori.setVerbose(true);
 			
 			
 		    apriori.buildAssociations(data);
