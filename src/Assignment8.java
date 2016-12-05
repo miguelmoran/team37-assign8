@@ -109,6 +109,10 @@ public class Assignment8 {
 		        }
 				
 				break;
+			case "show_suggestions":
+			case "WEKA":
+				simulator.analizeHistory();
+				break;
 			case "help":			
 			default:
 				

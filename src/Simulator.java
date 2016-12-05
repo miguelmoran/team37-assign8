@@ -3,8 +3,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -14,7 +13,6 @@ import java.util.Random;
 
 import weka.associations.Apriori;
 import weka.core.Instances;
-import weka.core.SelectedTag;
 import weka.core.converters.ArffLoader;
 
 
@@ -49,7 +47,11 @@ public class Simulator {
 	
 
 	public Simulator(){
-		folderPath = Assignment8.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+	
+			File filePath = new File(Assignment8.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+			folderPath = filePath.getParentFile().getAbsolutePath()+"/";
+		
+		//filePath.getParentFile().getAbsolutePath();
 		initialize();
 	}
 
@@ -100,7 +102,7 @@ public class Simulator {
 		String cycleFileToWrite = folderPath + "cycle.csv";
         List<String> lines = new ArrayList<String>();
 		    
-        System.out.println("Wrting cycle.csv for cycle: "+cycle);
+        System.out.println("Writing cycle.csv for cycle: "+cycle);
         lines.add(Integer.toString(cycle));
         Utils.writeFile(cycleFileToWrite,lines);
 	
@@ -319,7 +321,7 @@ public class Simulator {
 
 		}
 		catch(FileNotFoundException e){
-			System.out.println("the test file: "+ csvFileToRead+ "doesn't exist. ");
+			System.out.println("the test file: "+ csvFileToRead+ " doesn't exist. ");
 		} catch(IOException e) {
 			e.printStackTrace();
 		} finally{
@@ -360,7 +362,7 @@ public class Simulator {
 
 		}
 		catch(FileNotFoundException e){
-			System.out.println("the test file: "+ csvFileToRead+ "doesn't exist. ");
+			System.out.println("the test file: "+ csvFileToRead+ " doesn't exist. ");
 		} catch(IOException e) {
 			e.printStackTrace();
 		} finally{
@@ -399,7 +401,7 @@ public class Simulator {
 
 		}
 		catch(FileNotFoundException e){
-			System.out.println("the test file: "+ csvFileToRead+ "doesn't exist. ");
+			System.out.println("the test file: "+ csvFileToRead+ " doesn't exist. ");
 		} catch(IOException e) {
 			e.printStackTrace();
 		} finally{
@@ -459,7 +461,7 @@ protected boolean readAssignments(){
 
         }
 		catch(FileNotFoundException e){
-			System.out.println("the test file: "+ csvFileToRead+ "doesn't exist. ");
+			System.out.println("the test file: "+ csvFileToRead+ " doesn't exist. ");
 		} catch(IOException e) {
 			e.printStackTrace();
 		} /*finally{
@@ -509,7 +511,7 @@ protected boolean readAssignments(){
 			}
 		}
 		catch(FileNotFoundException e){
-			System.out.println("the test file: "+ csvFileToRead+ "doesn't exist. ");
+			System.out.println("the test file: "+ csvFileToRead+ " doesn't exist. ");
 		} catch(IOException e) {
 			e.printStackTrace();
 		} finally{
