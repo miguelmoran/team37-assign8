@@ -14,6 +14,7 @@ import java.util.Random;
 
 import weka.associations.Apriori;
 import weka.core.Instances;
+import weka.core.SelectedTag;
 import weka.core.converters.ArffLoader;
 
 
@@ -715,10 +716,26 @@ protected boolean readAssignments(){
 			
 			loader.setSource(new File(arffFileToWrite));
 			data = loader.getDataSet();
-			data.setClassIndex(data.numAttributes()-1);
+			//data.setClassIndex(data.numAttributes()-1);
+			
 			
 			Apriori apriori = new Apriori();
-			apriori.setClassIndex(data.classIndex());
+			apriori.setClassIndex(-1);
+			apriori.setCar(false);
+			apriori.setDelta(0.05);
+			apriori.setDoNotCheckCapabilities(false);
+			apriori.setLowerBoundMinSupport(0.1);
+			//apriori.setMetricType(d); //confidence
+			apriori.setMinMetric(0.9);
+			apriori.setNumRules(10);
+			apriori.setOutputItemSets(false);
+			apriori.setRemoveAllMissingCols(false);
+			apriori.setSignificanceLevel(-1.0);
+			apriori.setTreatZeroAsMissing(false);
+			apriori.setUpperBoundMinSupport(1.0);
+			apriori.setVerbose(false);
+			
+			
 		    apriori.buildAssociations(data);
 		    System.out.println(apriori);
 			
