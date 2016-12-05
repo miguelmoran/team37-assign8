@@ -116,16 +116,15 @@ public class Simulator {
         		line = new String();
         		a = academicRecords.get(i);
 
-        		line.concat(Integer.toString(a.student.uuid));
-        		line.concat(",");
-        		line.concat(Integer.toString(a.course.getId()));
-        		line.concat(",");
-        		line.concat(Integer.toString(a.instructor.getId()));
-        		line.concat(",");
-        		line.concat(a.comments);
-        		line.concat(",");
-        		line.concat(a.grade.toString());
-        		line.concat("\n");
+        		line = Integer.toString(a.student.uuid);
+        		line = line.concat(",");
+        		line = line.concat(Integer.toString(a.course.getId()));
+        		line = line.concat(",");
+        		line = line.concat(Integer.toString(a.instructor.getId()));
+        		line = line.concat(",");
+        		line = line.concat(a.comments);
+        		line = line.concat(",");
+        		line = line.concat(a.grade.toString());
   
         		lines.add(line);
         	}
@@ -163,6 +162,8 @@ public class Simulator {
 				String[] nextCycle = line.split(splitBy);	
 
 				cycle = Integer.parseInt(nextCycle[0]);
+				//DEBUG
+				System.out.println(cycle);
 			}
 
 		}
