@@ -100,12 +100,16 @@ public class Assignment8 {
 			case "yes":
 				System.out.println("loading Instructor Assigments for Semester "+simulator.getCycle());
 		        moreCycles= simulator.readAssignments();
-				System.out.println("association analysis of previous course selections");
-				simulator.analizeHistory();
+				
+
  
 		        if (!moreCycles){
 		            System.out.println("> stopping simulation - no more cycles");
 		            exit = true;
+		        }
+		        else{
+		        	System.out.println("association analysis of previous course selections");
+					simulator.analizeHistory();
 		        }
 				
 				break;

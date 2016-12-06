@@ -735,7 +735,7 @@ protected boolean readAssignments(){
 			apriori.setSignificanceLevel(-1.0);
 			apriori.setTreatZeroAsMissing(false);
 			apriori.setUpperBoundMinSupport(0.65);
-			apriori.setVerbose(true);
+			apriori.setVerbose(false);
 			
 			
 		    apriori.buildAssociations(data);
