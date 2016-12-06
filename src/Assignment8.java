@@ -88,6 +88,8 @@ public class Assignment8 {
 				simulator.resume();
 				simulator.writeCycle();
 				simulator.writeRecords();
+				simulator.writeWaitlist();
+				simulator.writeStatistics();
 				System.out.print("continue simulation? [yes/no]: ");
 				break;
 				

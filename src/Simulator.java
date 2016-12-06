@@ -134,11 +134,8 @@ public class Simulator {
         	}
         else
         	lines.add("");
-
 		    
         Utils.writeFile(recordsFileToWrite,lines);
-
-	
 	}
 
 	
@@ -149,9 +146,84 @@ public class Simulator {
 		readCycle();
 		readAcademicRecords();
 		readPrerequisites();
-		
+		readWaitlist();
+		readStatistics();
 	}
 	
+	private void readStatistics() {
+		String csvFileToRead = folderPath + "totalStatistics.csv";
+		BufferedReader br=null;
+		String line =  "";
+		String splitBy = ",";
+
+		try{
+			br = new BufferedReader(new FileReader(csvFileToRead));
+
+			while ((line = br.readLine())!=null){
+				String[] statistics = line.split(splitBy);	
+
+				totalValid = Integer.parseInt(statistics[0]);
+				totalFailed = Integer.parseInt(statistics[1]);
+				totalWaitlisted = Integer.parseInt(statistics[2]);
+				totalExamined = Integer.parseInt(statistics[3]);
+			}
+
+		}
+		catch(Exception e){
+			System.out.println("the test file: "+ csvFileToRead+ " doesn't exist. ");
+		} finally{
+			if (br !=null) {
+				try{
+					br.close();
+				}
+				catch(IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
+
+
+
+	private void readWaitlist() {
+		String csvFileToRead = folderPath + "cache_waitlist.csv";
+		BufferedReader br=null;
+		String line =  "";
+		String splitBy = ",";
+
+		try{
+			br = new BufferedReader(new FileReader(csvFileToRead));
+
+			while ((line = br.readLine())!=null){
+				String[] requests = line.split(splitBy);	
+
+				RequestRecord request = new RequestRecord(Integer.parseInt(requests[0]));
+				request.course = findCourseById(Integer.parseInt(requests[1]));
+				request.student = findStudentById(Integer.parseInt(requests[2]));
+				request.status = Boolean.parseBoolean(requests[3]);
+    			
+				waitlist.add(request);
+			}
+
+		}
+		catch(Exception e){
+			System.out.println("the test file: "+ csvFileToRead+ " doesn't exist. ");
+		} finally{
+			if (br !=null) {
+				try{
+					br.close();
+				}
+				catch(IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
+
+
+
 	private  void readCycle() {
 		String csvFileToRead = folderPath + "cycle.csv";
 		BufferedReader br=null;
@@ -165,8 +237,6 @@ public class Simulator {
 				String[] nextCycle = line.split(splitBy);	
 
 				cycle = Integer.parseInt(nextCycle[0]);
-				//DEBUG
-				System.out.println(cycle);
 			}
 
 		}
@@ -975,5 +1045,46 @@ protected boolean readAssignments(){
 			System.out.println("-------End of List--------------------------------");
 			System.out.print("$roster selection >");
 		}
+
+
+
+	public void writeWaitlist() {
+		//todo format for waitlist
+		String waitlistFileToWrite = folderPath + "cache_waitlist.csv";
+        List<String> lines = new ArrayList<String>();
+        String line = new String();
+        AcademicRecord a;
+        
+        System.out.println("Writing waitlist requests: "+ waitlist.size()+" requests");
+        if (waitlist.size()>0)
+        	for(RequestRecord request : waitlist) {
+        		line = new String();
+
+        		line = line.concat(Integer.toString(request.cycle));
+        		line = line.concat(",");
+        		line = line.concat(Integer.toString(request.course.id));
+        		line = line.concat(",");
+        		line = line.concat(Integer.toString(request.student.getId()));
+        		line = line.concat(",");
+        		line = line.concat(Boolean.toString(request.status));
+  
+        		lines.add(line);
+        	}
+        else
+        	lines.add("");
+		    
+        Utils.writeFile(waitlistFileToWrite,lines);
+	}
+
+
+
+	public void writeStatistics() {
+		String cycleFileToWrite = folderPath + "totalStatistics.csv";
+        List<String> lines = new ArrayList<String>();
+        
+        System.out.println("Writing totalStatistics.csv for cycle: " + cycle);
+        lines.add(totalValid + "," + totalFailed + "," + totalWaitlisted + "," + totalExamined);
+        Utils.writeFile(cycleFileToWrite,lines);
+	}
 	
 }
